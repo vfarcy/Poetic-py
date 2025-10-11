@@ -147,6 +147,31 @@ Fichiers utiles fournis
 
 Souhaitez-vous que j'applique automatiquement les corrections non intrusives listées (Option A) ?
 
+Utilitaire : `tools/tokenize.py`
+
+Un petit utilitaire `tools/tokenize.py` a été ajouté pour afficher les tokens extraits d'un fichier `.ptc` en reprenant exactement les règles de parsing de `poetic.py` (mode normal et `-w`). Ceci est utile pour déboguer ou construire des programmes Poetic de manière fiable.
+
+Usage :
+
+- Tokenize en mode normal (texte → longueurs → tokens) :
+
+```powershell
+python tools\tokenize.py hello.ptc
+```
+
+- Tokenize en mode wimpmode (garde seulement les chiffres) :
+
+```powershell
+python tools\tokenize.py -w examples\print_A.ptc
+```
+
+Exemples ajoutés dans le dépôt :
+
+- `examples/print_A.ptc` — impressions de 'A' (utiliser `-w`) ; se termine par `0` (END).
+- `examples/print_bang.ptc` — impressions de '!' (utiliser `-w`) ; se termine par `0` (END).
+
+Ces outils et exemples facilitent la construction et la vérification manuelle de petits programmes Poetic.
+
 Comportement des mots de longueur > 10
 
 - Règle générale : chaque mot est remplacé par sa longueur (p. ex. 11 → "11"). Le seul cas spécial déjà codé est 10 → "0".
