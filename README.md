@@ -146,3 +146,26 @@ Fichiers utiles fournis
 - `tests/run_tests.py` — test minimal qui exécute `poetic.py` sur `hello.ptc` et vérifie la sortie.
 
 Souhaitez-vous que j'applique automatiquement les corrections non intrusives listées (Option A) ?
+
+Comportement des mots de longueur > 10
+
+- Règle générale : chaque mot est remplacé par sa longueur (p. ex. 11 → "11"). Le seul cas spécial déjà codé est 10 → "0".
+- Conséquence : un mot de longueur 11 produit la chaîne "11" qui sera découpée par la regex en tokens `['1','1']` (donc deux instructions `1`, `1`).
+- Exemples :
+	- longueur 9 → token `['9']` (RND)
+	- longueur 10 → token `['0']` (END)  ← attention : termine le programme
+	- longueur 11 → tokens `['1','1']` → IF, IF
+	- longueur 12 → tokens `['1','2']` → IF, EIF
+	- longueur 35 → tokens `['35']` → INC 5 (puisque 3x peut former un token à deux chiffres)
+	- longueur 103 → tokens `['1','0','3']` → IF, END, OUT (comportement potentiellement surprenant)
+
+- Points clés à garder en tête :
+	- Seule la longueur 10 est compressée en '0' par le parsing initial ; les autres longueurs >9 restent multi-chiffres.
+	- Les tokens sont extraits ensuite selon la règle "deux chiffres si premier chiffre est 3–6, sinon un chiffre" — donc la découpe dépend fortement de l'alignement des chiffres.
+	- Un `0` isolé (idéalement issu d'une longueur 10) provoquera un `END` immédiat.
+
+Recommandations pratiques
+
+- Évitez les mots de longueur exactement 10 sauf si vous voulez explicitement terminer le programme.
+- Évitez de compter sur des longueurs > 9 pour générer des arguments multi-chiffres : préférez plusieurs instructions (ex : `30` pour INC 10 ou `35` puis `35` pour INC 5 deux fois) ou utilisez le mode `-w` et mettez les chiffres explicitement.
+- Si vous le souhaitez, je peux modifier le parser pour émettre des avertissements lors de la détection d'un `0` isolé (longueur 10) ou pour supporter un encodage différent des longueurs > 9 (ex : mapping modulo 10 ou scindage contrôlé).
