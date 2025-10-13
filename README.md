@@ -172,6 +172,47 @@ Exemples ajoutés dans le dépôt :
 
 Ces outils et exemples facilitent la construction et la vérification manuelle de petits programmes Poetic.
 
+Utilities détaillées
+
+- `tools/tokenize.py`
+	- Objectif : afficher la liste des tokens extraits d'un fichier `.ptc` en utilisant exactement le même parser que `poetic.py` (mode normal ou `-w`).
+	- Usage :
+		- Mode normal (texte → longueurs → tokens) :
+			```powershell
+			python tools\tokenize.py hello.ptc
+			```
+		- Mode wimpmode (garde seulement les chiffres) :
+			```powershell
+			python tools\tokenize.py -w examples\print_A.ptc
+			```
+
+- `tools/simulate.py`
+	- Objectif : tokeniser puis simuler l'exécution des tokens en affichant un trace pas-à-pas (dump d'état avant chaque instruction). Permet de visualiser IP, token courant, instruction, argument, pointeur mémoire et fenêtre mémoire.
+	- Options utiles :
+		- `--tokens` : affiche uniquement les tokens et sort.
+		- `--simulate` : exécute la simulation et affiche la trace.
+		- `--step` : mode interactif, attend Enter entre chaque instruction pour avancer.
+		- `--delay N` : ajoute N secondes d'attente entre chaque instruction quand on n'est pas en mode step.
+	- Exemples :
+		- Voir les tokens :
+			```powershell
+			python tools\simulate.py -w --tokens examples\print_A.ptc
+			```
+		- Simuler avec trace :
+			```powershell
+			python tools\simulate.py -w --simulate examples\print_A.ptc
+			```
+		- Mode pas-à-pas :
+			```powershell
+			python tools\simulate.py -w --simulate --step examples\print_A.ptc
+			```
+
+Notes
+
+- Les deux utilitaires reprennent fidèlement le comportement du parser de `poetic.py` : en mode normal les mots sont convertis en longueurs (10 → `0`), en `-w` on ne garde que les chiffres.
+- `tools/simulate.py` n'essaie pas de lire de l'entrée interactive pour l'instruction `IN` (8) durant la simulation : il marque l'EOF pour la simulation. C'est volontaire pour éviter le blocage lors d'une simulation non interactive.
+
+
 Comportement des mots de longueur > 10
 
 - Règle générale : chaque mot est remplacé par sa longueur (p. ex. 11 → "11"). Le seul cas spécial déjà codé est 10 → "0".
