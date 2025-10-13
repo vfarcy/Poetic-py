@@ -58,8 +58,13 @@ def simulate_tokens(tokens, step=False, delay=0.0, show_trace=False):
                 arg = 10
 
         if show_trace:
+            INSTR_NAMES = {
+                '0': 'END', '1': 'IF', '2': 'EIF', '3': 'INC', '4': 'DEC',
+                '5': 'FWD', '6': 'BAK', '7': 'OUT', '8': 'IN', '9': 'RND'
+            }
+            inst_name = INSTR_NAMES.get(instr, 'UNK')
             mem_window = " ".join(str(b) for b in memory[ptr:ptr+10])
-            print(f"IP={ip:03} TOK={tok:>2} INSTR={instr} ARG={arg} PTR={ptr} MEM=[{mem_window}]")
+            print(f"IP={ip:03} TOK={tok:>2} INSTR={instr}({inst_name}) ARG={arg} PTR={ptr} MEM=[{mem_window}]")
 
         if instr == "0":
             # END

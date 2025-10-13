@@ -25,8 +25,13 @@ def load_tokens_from_file(path, wimpmode=False):
 
 
 def dump_state(step, ip, token, instr, arg, mp, val, memory, window=8):
+    INSTR_NAMES = {
+        '0': 'END', '1': 'IF', '2': 'EIF', '3': 'INC', '4': 'DEC',
+        '5': 'FWD', '6': 'BAK', '7': 'OUT', '8': 'IN', '9': 'RND'
+    }
+    inst_name = INSTR_NAMES.get(instr, 'UNK')
     mem_slice = list(memory[mp:mp+window])
-    print(f"S{step:04d} IP={ip:04d} TOK={token!r} INST={instr} ARG={arg} MP={mp} VAL={val} MEM[{mp}:{mp+window}]={mem_slice}")
+    print(f"S{step:04d} IP={ip:04d} TOK={token!r} INST={instr}({inst_name}) ARG={arg} MP={mp} VAL={val} MEM[{mp}:{mp+window}]={mem_slice}")
 
 
 def simulate(tokens, step_mode=False, max_steps=10000, delay=0.0):
