@@ -2,9 +2,9 @@
 """Simulate Poetic from direct text or file input.
 
 Usage examples:
-  python tools\simulate_text.py --text "bonjour le monde" --simulate
-  python tools\simulate_text.py --text "une phrase" --tokens
-  python tools\simulate_text.py examples\print_A.ptc -w --simulate
+    python tools/simulate_text.py --text "bonjour le monde" --simulate
+    python tools/simulate_text.py --text "une phrase" --tokens
+    python tools/simulate_text.py examples/print_A.ptc -w --simulate
 """
 import argparse
 import re
