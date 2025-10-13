@@ -2,6 +2,8 @@ Poetic (esolang) — documentation
 
 [Internet Archive](https://web.archive.org/web/20210506130651/https://mcaweb.matc.edu/winslojr/vicom128/final/index.html)
 
+[Esolang.org](https://esolangs.org/wiki/Poetic_(esolang))
+
 But du projet
 
 Ce dépôt contient une implémentation simple en Python d'un interpréteur pour l'esolang "Poetic".
