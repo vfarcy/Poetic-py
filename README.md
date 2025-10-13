@@ -235,3 +235,23 @@ Recommandations pratiques
 - Évitez les mots de longueur exactement 10 sauf si vous voulez explicitement terminer le programme.
 - Évitez de compter sur des longueurs > 9 pour générer des arguments multi-chiffres : préférez plusieurs instructions (ex : `30` pour INC 10 ou `35` puis `35` pour INC 5 deux fois) ou utilisez le mode `-w` et mettez les chiffres explicitement.
 - Si vous le souhaitez, je peux modifier le parser pour émettre des avertissements lors de la détection d'un `0` isolé (longueur 10) ou pour supporter un encodage différent des longueurs > 9 (ex : mapping modulo 10 ou scindage contrôlé).
+
+`tools/simulate_text.py` — simulation depuis du texte
+
+Un utilitaire `tools/simulate_text.py` a été ajouté pour tokeniser et simuler directement à partir d'une chaîne de texte fournie avec `--text` (ou à partir d'un fichier). Il reprend les mêmes règles que `poetic.py` mais permet de travailler sans créer de fichier `.ptc` intermédiaire.
+
+Exemples rapides :
+
+```powershell
+python tools\simulate_text.py --text "bonjour le monde" --tokens
+python tools\simulate_text.py --text "bonjour le monde" --simulate
+python tools\simulate_text.py examples\print_A.ptc -w --simulate
+```
+
+Notes Unicode : le script utilise une approche portable (plage Unicode Latin de base) pour préserver les lettres accentuées françaises. Pour une couverture Unicode complète on peut remplacer l'expression régulière par la bibliothèque tierce `regex` et utiliser `\p{L}`.
+
+Contribuer
+
+- Si vous voulez que j'ouvre une Pull Request depuis `test-branch` vers `main`, dites-le et je la créerai.
+- Suggestions rapides : ajouter `pytest` + quelques tests unitaires, ajouter un workflow GitHub Actions pour lancer les tests automatiquement, ou améliorer la gestion Unicode en utilisant `regex`.
+
