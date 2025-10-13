@@ -3,7 +3,7 @@ import subprocess, sys, os
 ROOT = os.path.dirname(os.path.dirname(__file__))
 PY = sys.executable
 SCRIPT = os.path.join(ROOT, "poetic.py")
-TEST_PROGRAM = os.path.join(ROOT, "hello.ptc")
+TEST_PROGRAM = os.path.join(ROOT, "examples", "hello.ptc")
 
 proc = subprocess.run([PY, SCRIPT, TEST_PROGRAM], capture_output=True, text=True)
 print("STDOUT:", proc.stdout)

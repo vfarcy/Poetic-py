@@ -3,7 +3,8 @@ import argparse, random, re, sys
 # Function to print a specified error message to STDERR, then exit.
 def error(errorMsg):
 	sys.stderr.write("\nERROR: "+errorMsg)
-	sys.exit()
+	# Exit with non-zero status for automation
+	sys.exit(1)
 
 # Parse command-line options.
 parser = argparse.ArgumentParser()
@@ -31,16 +32,22 @@ args = parser.parse_args()
 if args.input == None:
 	inputStream = sys.stdin
 else:
-	inputStream = open(args.input)
+	try:
+		inputStream = open(args.input, encoding="utf8")
+	except FileNotFoundError:
+		error(f"Input file not found: {args.input}")
 
 # Open the program file, and convert it to a series of instructions
-with open(args.program, encoding="utf8") as f:
-	if args.wimpmode:
-		program = "".join([c for c in f.read() if c in "0123456789"])
-	else:
-		program = "".join([c if c.isalpha() else ("" if c=="'" else " ") for c in f.read()])
-		program = "".join([str(len(w)) if len(w)!=10 else "0" for w in program.split()])
+try:
+	with open(args.program, encoding="utf8") as f:
+		if args.wimpmode:
+			program = "".join([c for c in f.read() if c in "0123456789"])
+		else:
+			program = "".join([c if c.isalpha() else ("" if c=="'" else " ") for c in f.read()])
+			program = "".join([str(len(w)) if len(w)!=10 else "0" for w in program.split()])
 	program = re.findall(r"((?:[3456]\d)|\d)", program)
+except FileNotFoundError:
+	error(f"Program file not found: {args.program}")
 
 # Initializations
 instructionPointer = 0
@@ -164,3 +171,10 @@ while True:
 		# Set the current byte to a random value from 0 to 255.
 		memory[memoryPointer] = random.randint(0,255)
 		instructionPointer += 1
+
+# Close input file if we opened one
+if inputStream is not sys.stdin:
+    try:
+        inputStream.close()
+    except Exception:
+        pass
