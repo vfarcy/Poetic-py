@@ -75,6 +75,24 @@ mypy_cache/
 *.swp
 *.swo
 
+# Distribution / packaging (additional)
+dist/
+
+# Virtual environments (additional)
+env/
+
+# IDEs (ensure duplicates covered)
+.vscode/
+.idea/
+
+# Python cache and test (ensure duplicates covered)
+.pytest_cache/
+.coverage
+.coverage.*
+
+# Jupyter (duplicate safe)
+.ipynb_checkpoints
+
 # OS files
 .DS_Store
 Thumbs.db
