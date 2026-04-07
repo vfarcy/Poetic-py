@@ -1,185 +1,105 @@
-Poetic (esolang) — interpréteur Python + site archivé
+Bespoke (esolang) - Python interpreter + website
 
 [![Site GitHub Pages](https://img.shields.io/badge/site-GitHub%20Pages-1f6feb)](https://vfarcy.github.io/Poetic-py/)
 
-Références
+This repository now targets Bespoke as the primary language/runtime.
 
-- Internet Archive : https://web.archive.org/web/20210506130651/https://mcaweb.matc.edu/winslojr/vicom128/final/index.html
-- Page Esolang : https://esolangs.org/wiki/Poetic_(esolang)
+Migration docs:
+- Changelog: CHANGELOG_BESPOKE.md
+- Poetic legacy notes: README_POETIC_LEGACY.md
 
-Vue d’ensemble
+Overview
 
-Ce dépôt contient :
+This repository contains:
+- A Bespoke CLI interpreter: bespoke.py
+- A reusable Bespoke runtime: tools/bespoke_engine.py
+- Bespoke sample programs: examples/*.bspk
+- A local copy of the Bespoke site: site/
+- A local HTTP server + API for the website and backend execution: app.py + tools/serve_site.py
 
-- Un interpréteur Python pour Poetic : `poetic.py`
-- Des exemples de programmes Poetic : `examples/*.ptc`
-- Des utilitaires de tokenisation/simulation : `tools/`
-- Une copie locale du site Poetic original : `site/`
-- Un serveur local + API optionnels pour tests backend : `app.py` + `tools/serve_site.py`
+Prerequisites
 
-Prérequis
+- Python 3.10+ (tested in Windows PowerShell)
 
-- Python 3.10+ (fonctionne sur Windows PowerShell et terminaux standards)
+Run the Bespoke interpreter
 
-Lancer l’interpréteur
-
-Mode normal :
-
-```powershell
-python poetic.py examples\hello.ptc
-```
-
-Avec un fichier d’entrée :
+Basic usage:
 
 ```powershell
-python poetic.py -i input.txt examples\cat.ptc
+python bespoke.py examples\helloworld.bspk
 ```
 
-Wimpmode (source composée de chiffres) :
+With input file:
 
 ```powershell
-python poetic.py -w examples\print_A.ptc
+python bespoke.py -i input.txt examples\fibonacci.bspk
 ```
 
-Règles du langage Poetic implémentées
+Language notes (Bespoke)
 
-- Le source est lu en UTF-8.
-- Mode normal :
-  - les caractères non alphabétiques deviennent des séparateurs (apostrophe supprimée),
-  - chaque mot est remplacé par sa longueur,
-  - la longueur 10 est encodée en `0`.
-- Wimpmode (`-w`) : conserve uniquement les chiffres.
-- Regex de tokenisation :
+- Source is read as UTF-8.
+- Words are converted to digit streams by letter count.
+- 10-letter words encode digit 0.
+- Runtime uses stack + heap and arbitrary-precision integers.
+- Structured control flow includes IF, WHILE, DOWHILE, and FUNCTION operations.
 
-```python
-re.findall(r"((?:[3456]\d)|\d)", program)
-```
+Run local website + API
 
-Instructions
-
-- `0` END
-- `1` IF
-- `2` EIF
-- `3x` INC x (`0` en argument signifie 10)
-- `4x` DEC x (`0` en argument signifie 10)
-- `5x` FWD x (`0` en argument signifie 10)
-- `6x` BAK x (`0` en argument signifie 10)
-- `7` OUT
-- `8` IN
-- `9` RND
-
-Sémantique d’exécution
-
-- Taille de bande mémoire : 30000 octets
-- Valeurs d’octet en modulo 256
-- Pointeur mémoire circulaire (wrap)
-- IF/EIF supporte l’imbrication
-- IN cesse de modifier la mémoire après EOF/CTRL+Z
-
-Erreurs courantes de l’interpréteur
-
-- `Unexpected EOF`
-- `Missing argument`
-- `Mismatched IF/EIF`
-
-Utilitaires
-
-- `tools/tokenize.py`
-  - Affiche les tokens d’un fichier avec les mêmes règles que `poetic.py`
-- `tools/simulate.py`
-  - Simulation pas à pas avec trace d’exécution
-- `tools/simulate_text.py`
-  - Simulation depuis `--text` (pas besoin de fichier temporaire)
-
-Exemples :
-
-```powershell
-python tools\tokenize.py examples\hello.ptc
-python tools\simulate.py -w --simulate examples\print_A.ptc
-python tools\simulate_text.py --text "bonjour le monde" --tokens
-```
-
-Site web (copie archivée) et Try It Online
-
-Le dossier `site/` est une reconstruction locale du site original (pages, styles, polices, textures).
-
-Depuis la version actuelle, la page TIO locale execute l'interpreteur Poetic directement dans le navigateur (client-side), comme l'archive d'origine.
-
-Publication GitHub Pages
-
-- Une GitHub Action est fournie dans `.github/workflows/deploy-pages.yml` pour publier directement le contenu de `site/` sur GitHub Pages.
-- La publication se declenche sur chaque push vers `main` et peut aussi etre lancee manuellement depuis l'onglet Actions.
-- Dans les reglages du depot GitHub, il faut definir la source GitHub Pages sur `GitHub Actions`.
-- URL attendue du site publie : `https://vfarcy.github.io/Poetic-py/`
-- URL attendue de la page TIO : `https://vfarcy.github.io/Poetic-py/tio/index.html`
-
-Ouverture directe (sans serveur Python):
-
-- Ouvrir `site/tio/index.html` dans le navigateur.
-
-Serveur Python (optionnel)
-
-Le serveur reste utile pour servir l'ensemble du site en HTTP et pour tester l'API backend.
-
-Lancer le serveur web local + API :
+Start local server:
 
 ```powershell
 python app.py --port 8000
 ```
 
-Puis ouvrir :
+Then open:
+- Site: http://127.0.0.1:8000/
+- Try It Online: http://127.0.0.1:8000/tio/index.html
 
-- Site principal : http://127.0.0.1:8000/
-- Try It Online : http://127.0.0.1:8000/tio/index.html
+Backend API (optional)
 
-Endpoint API backend (optionnel)
+Endpoint:
+- POST /api/run
 
-- `POST /api/run`
-- Corps JSON :
+Request JSON:
 
 ```json
 {
-  "source": "...source poetic...",
-  "input": "...texte stdin...",
-  "wimpmode": false
+  "source": "...bespoke source...",
+  "input": "...stdin text..."
 }
 ```
 
-- Réponse JSON (succès) :
+Success JSON:
 
 ```json
 {
   "ok": true,
   "output": "...",
-  "steps": 123,
-  "tokens": 45
+  "steps": 123
 }
 ```
 
-Notes sur la page TIO
+Error JSON (runtime):
 
-- `Execute` lance le code Poetic dans le navigateur (sans appel API).
-- `Stop` arrete l'execution locale.
-- `Wimpmode OFF/ON` bascule le mode digits.
-- `Share` génère un lien qui stocke source/input/wimpmode dans l’URL.
-- L'indicateur affiche `Engine: Client-side`.
-
-Structure du projet
-
-- `poetic.py` — interpréteur CLI
-- `app.py` — lanceur racine du serveur website (optionnel)
-- `tools/poetic_engine.py` — runtime Poetic réutilisable pour scripts/API backend
-- `tools/serve_site.py` — serveur HTTP + `/api/run` (optionnel)
-- `site/` — pages/assets archivés (dont `site/tio/index.html`)
-- `examples/` — exemples `.ptc`
-- `tests/run_tests.py` — script de test
-
-Depannage rapide
-
-- Si le port 8000 est deja pris, utilise un autre port :
-
-```powershell
-python app.py --port 8011
+```json
+{
+  "ok": false,
+  "error": "..."
+}
 ```
 
-- Puis ouvre l'URL correspondante (`http://127.0.0.1:8011/tio/index.html`).
+Project structure
+
+- bespoke.py - Bespoke CLI
+- app.py - server entry point
+- tools/bespoke_engine.py - reusable Bespoke runtime
+- tools/serve_site.py - HTTP server + /api/run
+- site/ - website pages/assets
+- examples/ - Bespoke examples (.bspk)
+- tests/run_tests.py - test script
+
+GitHub Pages
+
+- Workflow: .github/workflows/deploy-pages.yml
+- Site URL: https://vfarcy.github.io/Poetic-py/
+- TIO URL: https://vfarcy.github.io/Poetic-py/tio/index.html
