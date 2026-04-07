@@ -1,5 +1,33 @@
 # Changelog - Poetic to Bespoke migration
 
+## 2026-04-07 (site & CLI polish)
+
+Scope: examples, site pages, and CLI fixes after initial migration.
+
+### Added
+
+- `examples/sum_two_numbers.bspk` — reads two integers from stdin, outputs their sum
+- `examples/loop_10_to_25.bspk` — loop from 10 to 25, each number on its own line (encoded as French prose)
+- `examples/function_call_demo.bspk` — minimal FUNCTION/CALL demo, outputs 42
+
+### Fixed
+
+- `bespoke.py`
+  - CLI no longer blocks waiting for stdin when launched from an interactive terminal (`sys.stdin.isatty()` guard)
+
+### Updated
+
+- `BESPOKELANG_CLI.md`
+  - Added HTTP status codes (200/400/404/500), CORS/OPTIONS behavior, and runtime limits (`max_steps`, `max_output`, `time_limit_s`)
+- `site/download/index.html`
+  - Corrected GitHub link (now `vfarcy/Poetic-py`), removed PyPI/pip reference, added `git clone` command and pipe usage examples
+- `site/index.html`
+  - Updated attribution paragraph: correct GitHub link, note that this site is a web implementation of Josiah Winslow's original project, added TIO link
+- `site/contact/index.html`
+  - Replaced personal contact details (email, Twitter) with links to `vfarcy/Poetic-py` Issues and Pull Requests
+- `site/tutorial/index.html`
+  - Removed appended legacy Poetic tutorial block (source code rules, Brainfuck instruction set, clarifications)
+
 ## 2026-04-07 (cleanup)
 
 Scope: remove remaining Poetic legacy files now that `.ptc` programs are gone.
@@ -76,5 +104,4 @@ existing website structure/style.
 
 ### Notes
 
-- Legacy Poetic documentation remains in existing files for historical context.
 - Branch target for this migration: `bespokelang`.
