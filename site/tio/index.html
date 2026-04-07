@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POETIC — Try It Online</title>
+  <title>BESPOKE — Try It Online</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
   <header>
-    <h1>POETIC</h1>
-    <h2>Poetry in Execution</h2>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
   </header>
 
   <nav>
     <ul>
-      <li><a href="../index.html">Poetic</a></li>
+      <li><a href="../index.html">Bespoke</a></li>
       <li><a href="../tutorial/index.html">Tutorial</a></li>
       <li><a href="../examples/index.html">Examples</a></li>
       <li class="active"><a href="index.html">Try It Online</a></li>
@@ -29,331 +29,435 @@
 
   <main>
     <p>
-      This page hosts an online interpreter for Poetic. If you are an aspiring poet,
-      you may run your poems here by entering them in the poem box below, entering any
-      input your poem might require, and clicking Execute. Alternatively, you may
-      visit the <a href="../download/index.html">Download</a> page to download interpreters
-      that you can run on your computer.
+      Write a Bespoke program in the box below, supply any required input, and click
+      <strong>Execute</strong>. The interpreter runs entirely in your browser using
+      BigInt arithmetic, supporting arbitrary-precision integers. Visit the
+      <a href="../tutorial/index.html">Tutorial</a> for a guide to the instruction set.
     </p>
 
-    <h2>Poetic Online Interpreter</h2>
+    <h2>Bespoke Online Interpreter</h2>
 
-    <textarea id="program-source" rows="10" cols="70" placeholder="Program source goes here"></textarea>
+    <div>
+      <textarea id="program-source" rows="12" cols="70"
+        placeholder="Program source goes here"></textarea>
+    </div>
+    <div>
+      <textarea id="program-input" rows="5" cols="50"
+        placeholder="Program input goes here (optional)"></textarea>
+    </div>
 
-    <textarea id="program-input" rows="6" cols="50" placeholder="Program input goes here"></textarea>
-
-    <button id="btn-share" type="button">Share</button>
+    <button id="btn-share"   type="button">Share</button>
     <button id="btn-execute" class="good" type="button">Execute</button>
-    <button id="btn-stop" class="bad" type="button">Stop</button>
-
-    <p>
-      Wimpmode
-      <button id="btn-wimpmode" class="bad" type="button">OFF</button>
-    </p>
+    <button id="btn-stop"    class="bad"  type="button">Stop</button>
 
     <pre id="program-output" data-placeholder="Program output goes here"></pre>
-    <p>
-      Engine:
-      <strong id="engine-status" style="color:#008f11;">Client-side</strong>
-    </p>
+    <p>Engine: <strong id="engine-status" style="color:#008f11;">Client-side (BigInt)</strong></p>
     <p id="run-status"></p>
 
     <script>
-      (function () {
-        const sourceEl = document.getElementById('program-source');
-        const inputEl = document.getElementById('program-input');
-        const outputEl = document.getElementById('program-output');
-        const statusEl = document.getElementById('run-status');
-        const engineStatusEl = document.getElementById('engine-status');
-        const shareBtn = document.getElementById('btn-share');
-        const executeBtn = document.getElementById('btn-execute');
-        const stopBtn = document.getElementById('btn-stop');
-        const wimpmodeBtn = document.getElementById('btn-wimpmode');
+/* ============================================================
+   BESPOKE ONLINE INTERPRETER  —  client-side, BigInt-based
+   Language: https://github.com/WinslowJosiah/bespokelang
+   ============================================================ */
+(function () {
+  'use strict';
 
-        engineStatusEl.textContent = 'Client-side';
-        engineStatusEl.style.color = '#008f11';
+  /* ── DOM ────────────────────────────────────────────── */
+  const sourceEl = document.getElementById('program-source');
+  const inputEl  = document.getElementById('program-input');
+  const outputEl = document.getElementById('program-output');
+  const statusEl = document.getElementById('run-status');
+  const shareBtn = document.getElementById('btn-share');
+  const exBut    = document.getElementById('btn-execute');
+  const stopBut  = document.getElementById('btn-stop');
 
-        let interval = null;
-        let running = false;
-        let wimpmode = false;
+  let interval = null;
+  let running  = false;
 
-        function tokenizeFromText(text, useWimpmode) {
-          if (useWimpmode) {
-            const program = Array.from(text).filter((ch) => /\d/.test(ch)).join('');
-            return program.match(/((?:[3456]\d)|\d)/g) || [];
-          }
+  /* ── Step 1: text → digit string ───────────────────── */
+  function convertToDigits(text) {
+    const norm = text.normalize('NFKC');
+    let result = '', wlen = 0, inW = false;
+    for (const ch of norm) {
+      const isL = /^\p{L}$/u.test(ch);
+      const isA = ch === "'" || ch === '\u2019';
+      if (isL || isA) { if (isL) wlen++; inW = true; }
+      else {
+        if (inW && wlen > 0) result += wlen === 10 ? '0' : String(wlen);
+        wlen = 0; inW = false;
+      }
+    }
+    if (inW && wlen > 0) result += wlen === 10 ? '0' : String(wlen);
+    return result;
+  }
 
-          const cleaned = Array.from(text)
-            .map((ch) => {
-              if (/[A-Za-zÀ-ÖØ-öø-ÿ]/.test(ch)) {
-                return ch;
-              }
-              if (ch === "'") {
-                return '';
-              }
-              return ' ';
-            })
-            .join('');
+  /* ── Step 2: digit string → token array ────────────── */
+  function tokenize(digits) {
+    const tokens = []; let i = 0, n = digits.length;
+    function sized() {
+      if (i >= n) throw new Error('Expected size digit, got end of program');
+      const sz = parseInt(digits[i]) || 10; i++;
+      if (i + sz > n) throw new Error('Incomplete number literal');
+      const v = digits.slice(i, i + sz); i += sz; return v;
+    }
+    while (i < n) {
+      const d = digits[i++];
+      if ('124568'.includes(d)) {
+        if (i >= n) throw new Error('Expected specifier after ' + d);
+        tokens.push({ cat: d, cmd: digits[i++], args: [] });
+      } else if (d === '7') {
+        if (i >= n) throw new Error('Expected specifier after 7');
+        const cmd = digits[i++];
+        tokens.push({ cat: '7', cmd, args: (cmd === '4' || cmd === '8') ? [sized()] : [] });
+      } else if (d === '3') {
+        tokens.push({ cat: '3', cmd: '', args: [sized()] });
+      } else if (d === '9') {
+        tokens.push({ cat: '9', cmd: '', args: [sized()] });
+      } else if (d === '0') {
+        const rest = digits.slice(i), j = rest.indexOf('0');
+        if (j < 0) throw new Error('Unterminated comment signature');
+        const sig = '0' + rest.slice(0, j + 1); i += j + 1;
+        const rest2 = digits.slice(i), k = rest2.indexOf(sig);
+        if (k < 0) throw new Error('Unterminated comment body');
+        i += k + sig.length;  /* discard comment */
+      }
+    }
+    return tokens;
+  }
 
-          const lengths = cleaned
-            .split(/\s+/)
-            .filter(Boolean)
-            .map((word) => (word.length === 10 ? '0' : String(word.length)));
-
-          const program = lengths.join('');
-          return program.match(/((?:[3456]\d)|\d)/g) || [];
+  /* ── Step 3: tokens → AST ──────────────────────────── */
+  function createAST(tokens, idx, block, inside) {
+    block = block || [];
+    while (idx.v < tokens.length) {
+      const t = tokens[idx.v++];
+      if (t.cat === '7' && t.cmd === '2') {          /* CONTROL IF */
+        const ifB = createAST(tokens, idx, [t], true).slice(1);
+        const last = ifB.pop();
+        let elseB = [];
+        if (last && last.cat === '7' && last.cmd === '9') {
+          const eb = createAST(tokens, idx, [last], true).slice(1);
+          if (eb.length) eb.pop();
+          elseB = eb;
         }
+        block.push([t, ifB, elseB]);
+      } else if (t.cat === '7' && t.cmd === '3') {   /* CONTROL END */
+        if (!inside) throw new Error('Unexpected CONTROL END');
+        block.push(t); return block;
+      } else if (t.cat === '7' && (t.cmd === '5' || t.cmd === '7' || t.cmd === '8')) {
+        block.push(createAST(tokens, idx, [t], true));
+      } else if (t.cat === '7' && t.cmd === '9') {   /* CONTROL OTHERWISE */
+        if (!block.length || !block[0].cat) throw new Error('Unexpected CONTROL OTHERWISE');
+        const f = block[0];
+        if (!(f.cat === '7' && f.cmd === '2')) throw new Error('Unexpected CONTROL OTHERWISE');
+        block.push(t); return block;
+      } else if (t.cat === '9') {                    /* CONTINUED */
+        if (!block.length || Array.isArray(block[block.length-1])) throw new Error('Unexpected CONTINUED');
+        const p = block[block.length-1];
+        if (p.cat === '3' || (p.cat === '7' && (p.cmd === '4' || p.cmd === '8')))
+          block[block.length-1] = { ...p, args: p.args.concat(t.args) };
+        else throw new Error('CONTINUED after invalid token');
+      } else { block.push(t); }
+    }
+    if (inside) block.push({ cat:'7', cmd:'3', args:[] });
+    return block;
+  }
 
-        function createExecutor(source, inputText, useWimpmode) {
-          const tokens = tokenizeFromText(source, useWimpmode);
-          let ip = 0;
-          const memory = new Uint8Array(new ArrayBuffer(30000));
-          let mp = 0;
-          let inputPos = 0;
-          let eofReached = false;
-          let output = '';
-          let steps = 0;
+  /* ── Control-flow signals ───────────────────────────── */
+  class BreakSig   extends Error {}
+  class ReturnSig  extends Error {}
+  class EndProgSig extends Error {}
 
-          return {
-            tokens: tokens.length,
-            getSteps: () => steps,
-            getOutput: () => output,
-            runChunk(chunkSize) {
-              for (let i = 0; i < chunkSize; i += 1) {
-                const token = tokens[ip];
-                if (!token) {
-                  return { done: true, ok: false, error: 'Unexpected EOF' };
-                }
+  /* ── Math helpers (BigInt floor-div / true-mod) ─────── */
+  function fdiv(a, b) {
+    const q = a / b;
+    return (a % b !== 0n && (a < 0n) !== (b < 0n)) ? q - 1n : q;
+  }
+  function tmod(a, b) {
+    const r = a % b;
+    return (r !== 0n && (r < 0n) !== (b < 0n)) ? r + b : r;
+  }
+  function inthRoot(x, n) {
+    if (n <= 0n) throw new Error('Root: n must be positive');
+    if (x === 0n) return 0n;
+    if (x < 0n)  throw new Error('Root: x must be nonnegative');
+    let q = x + 1n, r = x;
+    while (q > r) { const t = r; r = ((n-1n)*r + x/(r**(n-1n)))/n; q = t; }
+    return q;
+  }
 
-                const instr = token[0];
-                let arg = null;
-                if (token.length > 1) {
-                  arg = Number(token[1]);
-                  if (arg === 0) {
-                    arg = 10;
-                  }
-                }
+  /* ── Generator-based interpreter ───────────────────── */
+  function makeGenerator(source, inputText) {
+    /* shared mutable output bucket accessible from outside */
+    const state = { output: '', steps: 0 };
 
-                switch (instr) {
-                  case '0':
-                    return { done: true, ok: true };
-                  case '1':
-                    if (!memory[mp]) {
-                      let nested = 1;
-                      while (nested) {
-                        ip += 1;
-                        const t = tokens[ip];
-                        if (!t) {
-                          return { done: true, ok: false, error: 'Mismatched IF/EIF' };
-                        }
-                        if (t[0] === '1') {
-                          nested += 1;
-                        } else if (t[0] === '2') {
-                          nested -= 1;
-                        }
-                      }
-                    }
-                    break;
-                  case '2':
-                    if (memory[mp]) {
-                      let nested = -1;
-                      while (nested) {
-                        ip -= 1;
-                        const t = tokens[ip];
-                        if (!t) {
-                          return { done: true, ok: false, error: 'Mismatched IF/EIF' };
-                        }
-                        if (t[0] === '1') {
-                          nested += 1;
-                        } else if (t[0] === '2') {
-                          nested -= 1;
-                        }
-                      }
-                    }
-                    break;
-                  case '3':
-                    if (arg === null) {
-                      return { done: true, ok: false, error: 'Missing argument' };
-                    }
-                    memory[mp] = (memory[mp] + arg) % 256;
-                    break;
-                  case '4':
-                    if (arg === null) {
-                      return { done: true, ok: false, error: 'Missing argument' };
-                    }
-                    memory[mp] = (memory[mp] + 256 - (arg % 256)) % 256;
-                    break;
-                  case '5':
-                    if (arg === null) {
-                      return { done: true, ok: false, error: 'Missing argument' };
-                    }
-                    mp = (mp + arg) % memory.length;
-                    break;
-                  case '6':
-                    if (arg === null) {
-                      return { done: true, ok: false, error: 'Missing argument' };
-                    }
-                    mp = (mp + memory.length - (arg % memory.length)) % memory.length;
-                    break;
-                  case '7':
-                    output += String.fromCharCode(memory[mp]);
-                    break;
-                  case '8':
-                    if (!eofReached) {
-                      const ch = inputText[inputPos];
-                      if (typeof ch === 'undefined') {
-                        eofReached = true;
-                      } else {
-                        memory[mp] = ch.charCodeAt(0) % 256;
-                        inputPos += 1;
-                      }
-                    }
-                    break;
-                  case '9':
-                    memory[mp] = Math.floor(Math.random() * 256);
-                    break;
-                  default:
-                    return { done: true, ok: false, error: `Unknown instruction: ${instr}` };
-                }
+    const gen = (function*() {
+      const digits = convertToDigits(source);
+      if (!digits) return;
+      const tokens = tokenize(digits);
+      if (!tokens.length) return;
+      const ast = createAST(tokens, {v:0}, [], false);
 
-                ip += 1;
-                steps += 1;
-              }
+      const stack = [], heap = new Map(), fns = new Map();
+      let ipos = 0;
 
-              return { done: false, ok: true };
+      function peek()  { return ipos < inputText.length ? inputText[ipos]    : null; }
+      function rch()   { return ipos < inputText.length ? inputText[ipos++]  : null; }
+      function rnum()  {
+        while (peek() && /\s/.test(peek())) ipos++;
+        let b = '';
+        if (peek() === '-') { b = '-'; ipos++; }
+        while (peek() && /\d/.test(peek())) b += inputText[ipos++];
+        if (!b || b === '-') throw new Error('Invalid number input');
+        return BigInt(b);
+      }
+      function write(s) {
+        state.output += s;
+        if (state.output.length > 250000) throw new Error('Output limit exceeded');
+      }
+      function chk(c, m) { if (c) throw new Error(m); }
+
+      function* interpBlock(block) {
+        for (const item of block) {
+          if (Array.isArray(item)) { yield* interpSub(item); }
+          else { state.steps++; yield; yield* interpTok(item); }
+        }
+      }
+
+      function* interpSub(item) {
+        const f = item[0];
+        if (f.cat === '7' && f.cmd === '2') {           /* CONTROL IF */
+          chk(!stack.length, 'Stack underflow');
+          yield* interpBlock(stack.pop() !== 0n ? item[1] : item[2]);
+        } else if (f.cat === '7' && f.cmd === '5') {     /* CONTROL WHILE */
+          const body = item.slice(1,-1);
+          wl: while(true) {
+            chk(!stack.length,'Stack underflow');
+            if (stack.pop() === 0n) break;
+            try { yield* interpBlock(body); }
+            catch(e) { if (e instanceof BreakSig) break wl; throw e; }
+          }
+        } else if (f.cat === '7' && f.cmd === '7') {     /* CONTROL DOWHILE */
+          const body = item.slice(1,-1);
+          dl: do {
+            try { yield* interpBlock(body); }
+            catch(e) { if (e instanceof BreakSig) break dl; throw e; }
+            chk(!stack.length,'Stack underflow');
+            if (stack.pop() === 0n) break;
+          } while(true);
+        } else if (f.cat === '7' && f.cmd === '8') {     /* CONTROL FUNCTION */
+          fns.set(f.args.join(''), item.slice(1,-1));
+        }
+      }
+
+      function* interpTok(t) {
+        const {cat, cmd} = t;
+        if (cat === '1') {
+          if ('13579'.includes(cmd)) {
+            chk(!stack.length,'Stack underflow');
+            stack.push(heap.get(stack.pop()) ?? 0n);
+          } else {
+            chk(stack.length<2,'Stack underflow');
+            const addr=stack.pop(), val=stack.pop(); heap.set(addr,val);
+          }
+        } else if (cat === '2') {
+          if (cmd==='1') { chk(!stack.length,'Stack underflow'); stack.pop(); }
+          else if (cmd==='2') {
+            chk(!stack.length,'Stack underflow');
+            const n=Number(stack.pop());
+            chk(n===0||Math.abs(n)>stack.length,`Invalid stack argument: ${n}`);
+            stack.splice(n>0?stack.length-n:-n-1,1);
+          } else if (cmd==='3') {
+            chk(!stack.length,'Stack underflow');
+            const n=Number(stack.pop());
+            chk(n===0||Math.abs(n)>stack.length,`Invalid stack argument: ${n}`);
+            const top=stack.pop();
+            stack.splice(n>0?stack.length-n+1:-n-1,0,top);
+          } else if (cmd==='4') { chk(!stack.length,'Stack underflow'); stack.push(stack[stack.length-1]); }
+          else if (cmd==='5') {
+            chk(!stack.length,'Stack underflow');
+            const n=Number(stack.pop());
+            chk(n===0||Math.abs(n)>stack.length,`Invalid stack argument: ${n}`);
+            stack.push(n>0?stack[stack.length-n]:stack[-n-1]);
+          } else if (cmd==='6') {
+            chk(stack.length<2,'Stack underflow');
+            const a=stack.pop(),b=stack.pop(); stack.push(a,b);
+          } else if (cmd==='7') {
+            chk(!stack.length,'Stack underflow');
+            const n=Number(stack.pop());
+            chk(n===0||Math.abs(n)>stack.length,`Invalid stack argument: ${n}`);
+            const idx=n>0?stack.length-n:-n-1, top=stack[stack.length-1];
+            stack[stack.length-1]=stack[idx]; stack[idx]=top;
+          } else if (cmd==='8') { stack.reverse(); }
+          else if (cmd==='9') {
+            chk(!stack.length,'Stack underflow');
+            const n=Number(stack.pop());
+            chk(Math.abs(n)>stack.length,`Invalid stack argument: ${n}`);
+            if (n>0) { const s=stack.splice(stack.length-n,n); stack.push(...s.reverse()); }
+            else if (n<0) { const s=stack.splice(0,-n); stack.unshift(...s.reverse()); }
+          } else if (cmd==='0') {
+            chk(!stack.length,'Stack underflow');
+            const n=Number(stack.pop());
+            chk(n===0||Math.abs(n)>stack.length,`Invalid stack argument: ${n}`);
+            const idx=n>0?stack.length-n:-n-1;
+            stack.push(stack.splice(idx,1)[0]);
+          }
+        } else if (cat==='3') { stack.push(BigInt(t.args.join(''))); }
+        else if (cat==='4') { stack.push(BigInt(cmd)); }
+        else if (cat==='5') {
+          if ('13579'.includes(cmd)) stack.push(rnum());
+          else { const c=rch(); stack.push(c?BigInt(c.codePointAt(0)):-1n); }
+        } else if (cat==='6') {
+          if ('13579'.includes(cmd)) {
+            chk(!stack.length,'Stack underflow'); write(stack.pop().toString());
+          } else {
+            chk(!stack.length,'Stack underflow');
+            write(String.fromCodePoint(Number(tmod(stack.pop(),BigInt(0x110000)))));
+          }
+        } else if (cat==='7') {
+          if (cmd==='1') throw new BreakSig();
+          else if (cmd==='4') {
+            const body=fns.get(t.args.join(''));
+            if (!body) throw new Error('Undefined function: '+t.args.join(''));
+            try { yield* interpBlock(body); }
+            catch(e) {
+              if (e instanceof ReturnSig) { /* ok */ }
+              else if (e instanceof BreakSig) throw new Error('BREAK outside of loop (inside function)');
+              else throw e;
             }
-          };
-        }
-
-        function setRunning(isRunning) {
-          running = isRunning;
-          executeBtn.disabled = isRunning;
-          stopBtn.disabled = !isRunning;
-        }
-
-        function runProgram() {
-          if (running) {
-            return;
-          }
-          setRunning(true);
-          statusEl.textContent = 'Running...';
-          outputEl.textContent = '';
-
-          const executor = createExecutor(sourceEl.value, inputEl.value, wimpmode);
-
-          interval = setInterval(() => {
-            const state = executor.runChunk(100);
-            outputEl.textContent = executor.getOutput();
-
-            if (state.done) {
-              clearInterval(interval);
-              interval = null;
-              setRunning(false);
-
-              if (!state.ok) {
-                statusEl.textContent = 'Execution failed';
-                outputEl.textContent += `\nERROR: ${state.error}`;
-                return;
-              }
-
-              statusEl.textContent = `Done (${executor.getSteps()} steps, ${executor.tokens} tokens)`;
-            }
-          }, 1);
-        }
-
-        function stopProgram() {
-          if (interval !== null) {
-            clearInterval(interval);
-            interval = null;
-            setRunning(false);
-            statusEl.textContent = 'Stopped';
-            outputEl.textContent += '\nExecution stopped by user.';
+          } else if (cmd==='6') throw new ReturnSig();
+          else if (cmd==='0') throw new EndProgSig();
+        } else if (cat==='8') {
+          if (cmd==='1') { chk(!stack.length,'Stack underflow'); stack.push(stack.pop()===0n?1n:0n); }
+          else if (cmd==='2') {
+            chk(stack.length<2,'Stack underflow');
+            const b=stack.pop(),a=stack.pop(); stack.push(a<b?1n:0n);
+          } else if (cmd==='3') {
+            chk(stack.length<2,'Stack underflow');
+            const b=stack.pop(),a=stack.pop();
+            if (a<0n&&b<0n) throw new Error('Both base and exponent negative');
+            stack.push(b>=0n?a**b:inthRoot(a,-b));
+          } else if (cmd==='4') {
+            chk(stack.length<2,'Stack underflow');
+            const b=stack.pop(),a=stack.pop(); stack.push(a+b);
+          } else if (cmd==='5') {
+            chk(stack.length<2,'Stack underflow');
+            const b=stack.pop(),a=stack.pop(); stack.push(a-b);
+          } else if (cmd==='6') {
+            chk(stack.length<2,'Stack underflow');
+            const b=stack.pop(); if(b===0n)throw new Error('Modulo by zero');
+            const a=stack.pop(); stack.push(tmod(a,b));
+          } else if (cmd==='7') { chk(!stack.length,'Stack underflow'); stack[stack.length-1]++; }
+          else if (cmd==='8') { chk(!stack.length,'Stack underflow'); stack[stack.length-1]--; }
+          else if (cmd==='9') {
+            chk(stack.length<2,'Stack underflow');
+            const b=stack.pop(),a=stack.pop(); stack.push(a*b);
+          } else if (cmd==='0') {
+            chk(stack.length<2,'Stack underflow');
+            const b=stack.pop(); if(b===0n)throw new Error('Division by zero');
+            const a=stack.pop(); stack.push(fdiv(a,b));
           }
         }
+      }
 
-        function updateWimpmodeButton() {
-          wimpmodeBtn.textContent = wimpmode ? 'ON' : 'OFF';
-          wimpmodeBtn.classList.toggle('good', wimpmode);
-          wimpmodeBtn.classList.toggle('bad', !wimpmode);
+      try {
+        yield* interpBlock(ast);
+      } catch(e) {
+        if (e instanceof EndProgSig) { /* normal */ }
+        else if (e instanceof ReturnSig) throw new Error('RETURN outside of function');
+        else if (e instanceof BreakSig)  throw new Error('BREAK outside of loop');
+        else throw e;
+      }
+    })();
+
+    return { gen, state };
+  }
+
+  /* ── Executor wrapper ───────────────────────────────── */
+  function createExecutor(source, inputText) {
+    let done = false, error = null, obj;
+    try { obj = makeGenerator(source, inputText); }
+    catch(e) { done = true; error = e.message; return { runChunk: () => ({done:true,ok:false,error}), getOutput:()=>'', getSteps:()=>0, isDone:()=>true }; }
+    const {gen, state} = obj;
+    return {
+      getOutput: () => state.output,
+      getSteps:  () => state.steps,
+      isDone:    () => done,
+      runChunk(n) {
+        if (done) return {done:true, ok:!error, error};
+        for (let i=0;i<n;i++) {
+          let r;
+          try { r = gen.next(); }
+          catch(e) { done=true; error=e.message; return {done:true,ok:false,error}; }
+          if (r.done) { done=true; return {done:true,ok:true}; }
         }
+        return {done:false};
+      }
+    };
+  }
 
-        function encodeSharePayload(payload) {
-          return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-        }
+  /* ── UI ─────────────────────────────────────────────── */
+  function setRunning(b) {
+    running = b;
+    exBut.disabled  =  b;
+    stopBut.disabled = !b;
+  }
 
-        function decodeSharePayload(raw) {
-          return JSON.parse(decodeURIComponent(escape(atob(raw))));
-        }
+  let executor = null;
 
-        async function shareProgram() {
-          const payload = {
-            s: sourceEl.value,
-            i: inputEl.value,
-            w: wimpmode ? 1 : 0
-          };
-          const encoded = encodeSharePayload(payload);
-          const url = `${window.location.origin}${window.location.pathname}?state=${encodeURIComponent(encoded)}`;
+  function runProgram() {
+    if (running) return;
+    setRunning(true);
+    statusEl.textContent = 'Running\u2026';
+    outputEl.textContent = '';
+    executor = createExecutor(sourceEl.value, inputEl.value);
+    if (executor.isDone()) {
+      outputEl.textContent = executor.getOutput() || 'ERROR: ' + 'parse error?';
+      setRunning(false); return;
+    }
+    interval = setInterval(() => {
+      const s = executor.runChunk(500);
+      outputEl.textContent = executor.getOutput();
+      if (s.done) {
+        clearInterval(interval); interval = null; setRunning(false);
+        if (!s.ok) { statusEl.textContent='Execution failed'; outputEl.textContent += '\nERROR: '+s.error; }
+        else statusEl.textContent = 'Done (' + executor.getSteps() + ' steps)';
+      }
+    }, 1);
+  }
 
-          try {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              await navigator.clipboard.writeText(url);
-              statusEl.textContent = 'Share link copied to clipboard.';
-              return;
-            }
-          } catch (err) {
-            // Fallback below.
-          }
+  function stopProgram() {
+    if (!interval) return;
+    clearInterval(interval); interval = null; setRunning(false);
+    statusEl.textContent = 'Stopped';
+    if (executor) outputEl.textContent = executor.getOutput() + '\nExecution stopped by user.';
+  }
 
-          window.prompt('Copy this share link:', url);
-          statusEl.textContent = 'Share link generated.';
-        }
+  function enc(p) { return btoa(unescape(encodeURIComponent(JSON.stringify(p)))); }
+  function dec(r) { return JSON.parse(decodeURIComponent(escape(atob(r)))); }
 
-        function loadShareState() {
-          const params = new URLSearchParams(window.location.search);
-          const raw = params.get('state');
-          if (!raw) {
-            return;
-          }
-          try {
-            const payload = decodeSharePayload(raw);
-            if (typeof payload.s === 'string') {
-              sourceEl.value = payload.s;
-            }
-            if (typeof payload.i === 'string') {
-              inputEl.value = payload.i;
-            }
-            wimpmode = !!payload.w;
-            updateWimpmodeButton();
-            statusEl.textContent = 'Shared program loaded.';
-          } catch (err) {
-            statusEl.textContent = 'Invalid share link.';
-          }
-        }
+  async function shareProgram() {
+    const url = location.origin + location.pathname + '?state=' + encodeURIComponent(enc({s:sourceEl.value,i:inputEl.value}));
+    try { await navigator.clipboard.writeText(url); statusEl.textContent='Share link copied.'; }
+    catch(_) { window.prompt('Copy this share link:',url); statusEl.textContent='Share link generated.'; }
+  }
 
-        function toggleWimpmode() {
-          wimpmode = !wimpmode;
-          updateWimpmodeButton();
-        }
+  function loadShareState() {
+    const raw = new URLSearchParams(location.search).get('state');
+    if (!raw) return;
+    try { const p=dec(raw); if(typeof p.s==='string')sourceEl.value=p.s; if(typeof p.i==='string')inputEl.value=p.i; statusEl.textContent='Shared program loaded.'; }
+    catch(_) { statusEl.textContent='Invalid share link.'; }
+  }
 
-        executeBtn.addEventListener('click', runProgram);
-        stopBtn.addEventListener('click', stopProgram);
-        shareBtn.addEventListener('click', shareProgram);
-        wimpmodeBtn.addEventListener('click', toggleWimpmode);
-        updateWimpmodeButton();
-        loadShareState();
-        setRunning(false);
-      })();
+  exBut.addEventListener('click', runProgram);
+  stopBut.addEventListener('click', stopProgram);
+  shareBtn.addEventListener('click', shareProgram);
+  loadShareState();
+  setRunning(false);
+})();
     </script>
   </main>
 
   <hr>
-
-  <footer id="contact-info">
-    1-414-488-5732
-    <a href="mailto:winslowjosiah@gmail.com">winslowjosiah@gmail.com</a>
-    <a href="https://twitter.com/WinslowJosiah">@WinslowJosiah</a><br>
-    &copy; Copyright Josiah Winslow 2018.
-  </footer>
 
 </body>
 </html>

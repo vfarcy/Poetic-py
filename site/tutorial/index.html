@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POETIC — Tutorial</title>
+  <title>BESPOKE — Tutorial</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
   <header>
-    <h1>POETIC</h1>
-    <h2>Poetry in Execution</h2>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
   </header>
 
   <nav>
     <ul>
-      <li><a href="../index.html">Poetic</a></li>
+      <li><a href="../index.html">Bespoke</a></li>
       <li class="active"><a href="index.html">Tutorial</a></li>
       <li><a href="../examples/index.html">Examples</a></li>
       <li><a href="../tio/index.html">Try It Online</a></li>
@@ -28,6 +28,286 @@
   <hr>
 
   <main class="clearfix">
+
+    <div id="toc-container">
+      <h3>On this page:</h3>
+      <ul>
+        <li><a href="#encoding">Encoding</a></li>
+        <li><a href="#data-model">Data Model</a></li>
+        <li><a href="#mnemonics">Mnemonics</a></li>
+        <li><a href="#instructions">Instructions</a>
+          <ul>
+            <li><a href="#h">1 — H (Heap)</a></li>
+            <li><a href="#do">2 — DO (Stack)</a></li>
+            <li><a href="#put">3 — PUT</a></li>
+            <li><a href="#push">4 — PUSH</a></li>
+            <li><a href="#input">5 — INPUT</a></li>
+            <li><a href="#output">6 — OUTPUT</a></li>
+            <li><a href="#control">7 — CONTROL</a></li>
+            <li><a href="#stacktop">8 — STACKTOP</a></li>
+            <li><a href="#continued">9 — CONTINUED</a></li>
+            <li><a href="#commentary">0 — COMMENTARY</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <p>
+      Bespoke is a stack-based esoteric programming language whose instructions are
+      encoded in the letter-counts of ordinary words. The language supports
+      arbitrary-precision integers, a stack, a heap, conditionals, loops, and
+      functions — all expressed through natural prose.
+    </p>
+
+    <h2 id="encoding">Encoding</h2>
+
+    <p>Before a Bespoke program runs, its words are converted to digits:</p>
+
+    <ul>
+      <li>Only alphabetic characters and apostrophes (<span class="inline-code">'</span>
+          or <span class="inline-code">'</span>) count as part of a word. All other characters act as word separators.</li>
+      <li>An <em>n</em>-letter word produces:
+        <ul>
+          <li>The digit <em>n</em> if <em>n</em> &lt; 10</li>
+          <li>The digit <strong>0</strong> if <em>n</em> = 10</li>
+          <li>Two consecutive digits if <em>n</em> &gt; 10 (e.g. a 12-letter word → <strong>1 2</strong>)</li>
+        </ul>
+      </li>
+      <li>Apostrophes do not count towards a word's length:
+          <span class="inline-code">couldn't</span> → 7 letters → digit 7.</li>
+    </ul>
+
+    <p>Examples:</p>
+
+    <table>
+      <thead><tr><th>Word(s)</th><th>Digit(s)</th></tr></thead>
+      <tbody>
+        <tr><td><span class="inline-code">I</span></td><td>1</td></tr>
+        <tr><td><span class="inline-code">tiny</span></td><td>4</td></tr>
+        <tr><td><span class="inline-code">pythons</span></td><td>7</td></tr>
+        <tr><td><span class="inline-code">vocabulary</span></td><td>0</td></tr>
+        <tr><td><span class="inline-code">couldn't</span></td><td>7</td></tr>
+        <tr><td><span class="inline-code">unintelligible</span></td><td>1, 4</td></tr>
+        <tr><td><span class="inline-code">I marred a groaning silhouette</span></td><td>1, 6, 1, 8, 0</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="data-model">Data Model</h2>
+
+    <p>
+      Bespoke works with <strong>arbitrary-precision integers</strong> — there is no limit
+      on how large or negative a number can be.  Values live in one of two places:
+    </p>
+
+    <ul>
+      <li>The <strong>stack</strong> — a last-in, first-out sequence. Numbers are pushed
+        onto and popped from the top.</li>
+      <li>The <strong>heap</strong> — a mapping from integer addresses to integer values.
+        Any integer is a valid address; unset addresses default to <strong>0</strong>.</li>
+    </ul>
+
+    <h2 id="mnemonics">Mnemonics</h2>
+
+    <p>
+      The documentation uses a set of "mnemonic" words to describe instructions.
+      Any word of the correct length produces the same digit — the actual words shown
+      below are just illustrative. The digit-to-mnemonic map for numeric arguments is:
+    </p>
+
+    <table>
+      <thead><tr><th>Digit</th><th>Mnemonic</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>I</td></tr>
+        <tr><td>2</td><td>BI</td></tr>
+        <tr><td>3</td><td>TRI</td></tr>
+        <tr><td>4</td><td>FOUR</td></tr>
+        <tr><td>5</td><td>FIFTH</td></tr>
+        <tr><td>6</td><td>SEXTET</td></tr>
+        <tr><td>7</td><td>SEVENTH</td></tr>
+        <tr><td>8</td><td>INTEIGHT</td></tr>
+        <tr><td>9</td><td>DIGITNINE</td></tr>
+        <tr><td>0</td><td>NUMBERZERO</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      So <span class="inline-code">PUSH SEVENTH</span> encodes the digit sequence
+      <span class="inline-code">47</span>, which pushes 7 onto the stack — but
+      <span class="inline-code">tiny pythons</span> (4 + 7) does exactly the same thing.
+    </p>
+
+    <h2 id="instructions">Instructions</h2>
+
+    <p>
+      Instructions are identified by the first digit of a two-digit sequence (or
+      sometimes a longer sequence for multi-digit numbers). There are 10 categories.
+    </p>
+
+    <h3 id="h">1 — H (Heap)</h3>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>11 / 13 / 15 / 17 / 19</td><td>H V / H LDV / …</td>
+            <td>Pop <em>addr</em> from stack; push the value at heap[<em>addr</em>] (0 if unset).</td></tr>
+        <tr><td>12 / 14 / 16 / 18 / 10</td><td>H SV / H STRV / …</td>
+            <td>Pop <em>addr</em> then <em>val</em> from stack; store <em>val</em> at heap[<em>addr</em>].</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="do">2 — DO (Stack manipulation)</h3>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>21</td><td>DO P</td><td>Pop and discard the top value.</td></tr>
+        <tr><td>22</td><td>DO PN</td><td>Pop <em>n</em>; remove the <em>n</em>th value from the top (negative = from bottom).</td></tr>
+        <tr><td>23</td><td>DO ROT</td><td>Pop <em>n</em>; rotate the top value down to the <em>n</em>th position.</td></tr>
+        <tr><td>24</td><td>DO COPY</td><td>Duplicate the top value.</td></tr>
+        <tr><td>25</td><td>DO COPYN</td><td>Pop <em>n</em>; copy the <em>n</em>th value to the top.</td></tr>
+        <tr><td>26</td><td>DO SWITCH</td><td>Swap the top two values.</td></tr>
+        <tr><td>27</td><td>DO SWITCHN</td><td>Pop <em>n</em>; swap the top value with the <em>n</em>th.</td></tr>
+        <tr><td>28</td><td>DO TURNOVER</td><td>Reverse the entire stack.</td></tr>
+        <tr><td>29</td><td>DO TURNOVERN</td><td>Pop <em>n</em>; reverse the top <em>n</em> values.</td></tr>
+        <tr><td>20</td><td>DO ROTINVERSE</td><td>Pop <em>n</em>; rotate the <em>n</em>th value up to the top.</td></tr>
+      </tbody>
+    </table>
+
+    <p>For commands that take <em>n</em>: a positive <em>n</em> counts from the top;
+       a negative <em>n</em> counts from the bottom. <em>n</em> cannot be 0.</p>
+
+    <h3 id="put">3 — PUT (push multi-digit number)</h3>
+
+    <p>
+      <span class="inline-code">PUT</span> pushes a number with up to 10 digits onto the stack.
+      The digit immediately after <span class="inline-code">3</span> specifies <em>how many</em>
+      digits the number has (0 = 10), followed by those digits.
+    </p>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Pushes</th></tr></thead>
+      <tbody>
+        <tr><td>315</td><td>PUT X:FIFTH</td><td>5</td></tr>
+        <tr><td>3210</td><td>PUT XX:I NUMBERZERO</td><td>10</td></tr>
+        <tr><td>33123</td><td>PUT XXX:I BI TRI</td><td>123</td></tr>
+        <tr><td>3516180</td><td>PUT XXXXX:I SEXTET I INTEIGHT NUMBERZERO</td><td>16180</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="push">4 — PUSH (push single-digit number)</h3>
+
+    <p>The digit after <span class="inline-code">4</span> is the number pushed (0–9).</p>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Pushes</th></tr></thead>
+      <tbody>
+        <tr><td>42</td><td>PUSH BI</td><td>2</td></tr>
+        <tr><td>47</td><td>PUSH SEVENTH</td><td>7</td></tr>
+        <tr><td>40</td><td>PUSH NUMBERZERO</td><td>0</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="input">5 — INPUT</h3>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>51 / 53 / 55 / 57 / 59</td><td>INPUT N / INPUT INT / …</td>
+            <td>Read a number from input; push it.</td></tr>
+        <tr><td>52 / 54 / 56 / 58 / 50</td><td>INPUT CH / INPUT CHAR / …</td>
+            <td>Read one character; push its Unicode codepoint. Push -1 on EOF.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="output">6 — OUTPUT</h3>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>61 / 63 / 65 / 67 / 69</td><td>OUTPUT N / OUTPUT INT / …</td>
+            <td>Pop <em>n</em>; output it as a decimal number.</td></tr>
+        <tr><td>62 / 64 / 66 / 68 / 60</td><td>OUTPUT CH / OUTPUT CHAR / …</td>
+            <td>Pop <em>n</em>; output the Unicode character at codepoint <em>n</em> mod 1,114,112.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="control">7 — CONTROL (Control flow)</h3>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>70</td><td>CONTROL ENDPROGRAM</td><td>End the program immediately.</td></tr>
+        <tr><td>71</td><td>CONTROL B</td><td>Break out of the current loop (invalid outside a loop).</td></tr>
+        <tr><td>72</td><td>CONTROL IF</td><td>Pop <em>cond</em>; if zero, skip to the matching END (or jump to OTHERWISE).</td></tr>
+        <tr><td>73</td><td>CONTROL END</td><td>End the current block (IF / WHILE / DOWHILE / FUNCTION).</td></tr>
+        <tr><td>74 …</td><td>CONTROL CALL <em>name</em></td><td>Call the named function. Name encoded like PUT.</td></tr>
+        <tr><td>75</td><td>CONTROL WHILE</td><td>Pop <em>cond</em> at start of each iteration; loop while nonzero.</td></tr>
+        <tr><td>76</td><td>CONTROL RETURN</td><td>Return from the current function (invalid outside a function).</td></tr>
+        <tr><td>77</td><td>CONTROL DOWHILE</td><td>Run body; pop <em>cond</em> at end; continue while nonzero.</td></tr>
+        <tr><td>78 …</td><td>CONTROL FUNCTION <em>name</em></td><td>Define a function. Name encoded like PUT.</td></tr>
+        <tr><td>79</td><td>CONTROL OTHERWISE</td><td>Separates the if-body from the else-body inside CONTROL IF … CONTROL END.</td></tr>
+      </tbody>
+    </table>
+
+    <p>Function names are multi-digit numbers, encoded exactly like the argument of PUT.</p>
+
+    <h3 id="stacktop">8 — STACKTOP (Arithmetic &amp; comparisons)</h3>
+
+    <table>
+      <thead><tr><th>Sequence</th><th>Mnemonic</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>81</td><td>STACKTOP F</td><td>Pop <em>n</em>; push 1 if <em>n</em> = 0, else push 0. (Boolean NOT.)</td></tr>
+        <tr><td>82</td><td>STACKTOP LT</td><td>Pop <em>b</em> then <em>a</em>; push 1 if <em>a</em> &lt; <em>b</em>, else 0.</td></tr>
+        <tr><td>83</td><td>STACKTOP POW</td><td>Pop <em>b</em> then <em>a</em>; push <em>a</em><sup><em>b</em></sup> (negative <em>b</em> → integer root).</td></tr>
+        <tr><td>84</td><td>STACKTOP PLUS</td><td>Pop <em>b</em> then <em>a</em>; push <em>a</em> + <em>b</em>.</td></tr>
+        <tr><td>85</td><td>STACKTOP MINUS</td><td>Pop <em>b</em> then <em>a</em>; push <em>a</em> − <em>b</em>.</td></tr>
+        <tr><td>86</td><td>STACKTOP MODULO</td><td>Pop <em>b</em> then <em>a</em>; push <em>a</em> mod <em>b</em> (result has sign of <em>b</em>).</td></tr>
+        <tr><td>87</td><td>STACKTOP PLUSONE</td><td>Pop <em>n</em>; push <em>n</em> + 1.</td></tr>
+        <tr><td>88</td><td>STACKTOP MINUSONE</td><td>Pop <em>n</em>; push <em>n</em> − 1.</td></tr>
+        <tr><td>89</td><td>STACKTOP PRODUCTOF</td><td>Pop <em>b</em> then <em>a</em>; push <em>a</em> × <em>b</em>.</td></tr>
+        <tr><td>80</td><td>STACKTOP QUOTIENTOF</td><td>Pop <em>b</em> then <em>a</em>; push <em>a</em> ÷ <em>b</em> (floor division).</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="continued">9 — CONTINUED</h3>
+
+    <p>
+      <span class="inline-code">CONTINUED</span> extends a number from an immediately
+      preceding PUT, CONTROL CALL, or CONTROL FUNCTION command by appending more digits.
+      This allows numbers with more than 10 digits, and functions with very long names.
+    </p>
+
+    <pre>PUT XXXXXXXXXX:TRI I I TRI I BI I I I TRI
+CONTINUED XXXX:I BI BI I
+<em>Pushes 31131211131221</em></pre>
+
+    <h3 id="commentary">0 — COMMENTARY</h3>
+
+    <p>
+      Two 10-letter words in a row produce <span class="inline-code">00</span>, which starts a comment.
+      The comment ends at the next <span class="inline-code">00</span>.
+    </p>
+
+    <pre>COMMENTARY INITIALIZE
+    This text is completely ignored by the interpreter.
+COMMENTARY TERMINATED</pre>
+
+    <p>
+      To embed <span class="inline-code">00</span> inside a comment, place any nonzero digits between
+      the opening and closing zeros — the same sequence must appear at both ends:
+    </p>
+
+    <pre>COMMENTARY here are some words INITIALIZE
+    This comment won't end at COMMENTARY INITIALIZE.
+COMMENTARY here are some words TERMINATED</pre>
+
+  </main>
+
+  <hr>
+
+</body>
+</html>
+
 
     <div id="toc-container">
       <h3>On this page:</h3>

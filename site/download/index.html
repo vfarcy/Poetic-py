@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POETIC — Download</title>
+  <title>BESPOKE — Download</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
   <header>
-    <h1>POETIC</h1>
-    <h2>Poetry in Execution</h2>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
   </header>
 
   <nav>
     <ul>
-      <li><a href="../index.html">Poetic</a></li>
+      <li><a href="../index.html">Bespoke</a></li>
       <li><a href="../tutorial/index.html">Tutorial</a></li>
       <li><a href="../examples/index.html">Examples</a></li>
       <li><a href="../tio/index.html">Try It Online</a></li>
@@ -32,59 +32,45 @@
     <h2>Download</h2>
 
     <p>
-      <a href="https://web.archive.org/web/20201115195745/https://mcaweb.matc.edu/winslojr/vicom128/final/files/poetic-py.zip">
-        Python interpreter with example programs
-      </a> (4 KB zipped)
+      Bespoke is hosted on
+      <a href="https://github.com/WinslowJosiah/bespokelang">GitHub</a>.
+      Install from PyPI with:
     </p>
 
-    <p>
-      <a href="https://web.archive.org/web/20201115195745/https://mcaweb.matc.edu/winslojr/vicom128/final/files/poetic.zip">
-        .exe interpreter with example programs
-      </a> (14 KB zipped) (Windows only)
-    </p>
+    <div class="cmd">pip install bespokelang</div>
 
     <p>
-      If anything goes wrong while running these interpreters, please
-      <a href="../contact/index.html">contact me</a>!
+      You can also clone the repository and run the
+      <span class="inline-code">bespoke.py</span> script directly.
     </p>
 
     <h2>How To Use</h2>
 
-    <p>
-      The Python interpreter takes arguments from the command-line, and it is run like
-      this:
-    </p>
+    <p>The interpreter is invoked from the command line like this:</p>
 
-    <div class="cmd">poetic.py [ -i input-file ] [ -w ] poetic-program</div>
+    <div class="cmd">bespoke.py [ -i input-file ] bespoke-program</div>
 
     <p>
-      <span class="inline-code">poetic-program</span> is the program file which you want to run as Poetic
-      code. (It can have any extension, though <span class="inline-code">.ptc</span> is recommended.)
+      <span class="inline-code">bespoke-program</span> is the file you want to run.
+      The recommended extension is <span class="inline-code">.bspk</span>.
     </p>
-
-    <p>The options are optional, but if included, they do the following:</p>
 
     <ul>
-      <li><strong>-i / --input</strong> — Take input from a specified file, instead of STDIN.</li>
-      <li><strong>-w / --wimpmode</strong> — Interpret program in wimpmode (programs are a series of numbers, instead of words).</li>
+      <li><strong>-i / --input</strong> — Read input from a file instead of STDIN.</li>
     </ul>
 
-    <p>(When typing in STDIN, the sequence <kbd>CTRL+Z</kbd> is considered end-of-file.)</p>
+    <p>
+      (<kbd>CTRL+Z</kbd> on Windows or <kbd>CTRL+D</kbd> on Unix signals end-of-file.)
+    </p>
 
     <p>
-      Others are more than welcome to send me their own interpreters and compilers for
-      Poetic (bonus points if they are valid Poetic programs themselves!).
+      No installation needed? Use the
+      <a href="../tio/index.html">Try It Online</a> page instead.
     </p>
 
   </main>
 
   <hr>
 
-  <footer id="contact-info">
-    1-414-488-5732
-    <a href="mailto:winslowjosiah@gmail.com">winslowjosiah@gmail.com</a>
-    <a href="https://twitter.com/WinslowJosiah">@WinslowJosiah</a><br>
-    &copy; Copyright Josiah Winslow 2018.
-  </footer>
 </body>
 </html>

@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POETIC — FAQ</title>
+  <title>BESPOKE — FAQ</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
   <header>
-    <h1>POETIC</h1>
-    <h2>Poetry in Execution</h2>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
   </header>
 
   <nav>
     <ul>
-      <li><a href="../index.html">Poetic</a></li>
+      <li><a href="../index.html">Bespoke</a></li>
       <li><a href="../tutorial/index.html">Tutorial</a></li>
       <li><a href="../examples/index.html">Examples</a></li>
       <li><a href="../tio/index.html">Try It Online</a></li>
@@ -34,110 +34,80 @@
       <ul>
         <li><a href="#is-this-a-joke">Is this some kind of joke?</a></li>
         <li><a href="#why-does-this-exist">Why does this exist?</a></li>
-        <li><a href="#write-and-run">How do I write and run these poems/programs?</a></li>
-        <li><a href="#who-made-this">Who's the weirdo that made this?</a></li>
-        <li><a href="#strange-poems">Why do the poems seem so strange?</a></li>
-        <li><a href="#too-hard">Poetic programs are too hard to write!</a></li>
-        <li><a href="#practical-uses">Are there any practical uses for Poetic?</a></li>
+        <li><a href="#how-to-write">How do I write and run Bespoke programs?</a></li>
+        <li><a href="#who-made-this">Who made this?</a></li>
+        <li><a href="#strange-prose">Why does the prose seem so strange?</a></li>
+        <li><a href="#practical">Are there practical uses for Bespoke?</a></li>
       </ul>
     </div>
 
     <h2 id="is-this-a-joke">Is this some kind of joke?</h2>
 
     <p>
-      That is an odd question to open with, but no. The interpreter works, the example
-      programs work, and it is indeed possible to write your own programs. Whether or
-      not you would want to is an entirely different story.
+      No. The interpreter works, the example programs run correctly, and it is
+      genuinely possible to write new programs. Whether you <em>want</em> to is
+      a separate question.
     </p>
 
     <h2 id="why-does-this-exist">Why does this exist?</h2>
 
     <p>
-      This programming language is partly inspired by
-      <a href="https://esolangs.org/wiki/Brainf***">brainf***</a> by Urban Müller,
-      which is an esoteric programming language (or esolang) that, despite having only
-      8 instructions, is Turing-complete (able to compute anything that is computable,
-      given enough time and memory). The idea behind Poetic is a hybrid of brainf***
-      and <a href="http://cadaeic.net/pilish.htm">Pilish</a>, which describes a way of
-      writing in which the lengths of words follow the digits of the number pi.
+      Bespoke is an evolution of <a href="https://esolangs.org/wiki/Poetic">Poetic</a>,
+      another esoteric language by Josiah Winslow. Where Poetic encodes
+      <a href="https://esolangs.org/wiki/Brainf***">Brainfuck</a> instructions via
+      word length, Bespoke uses the same encoding principle but defines its own,
+      richer instruction set — complete with a stack, a heap, arbitrary-precision
+      integers, and structured control flow.
     </p>
-
-    <h2 id="write-and-run">How do I write and run these poems/programs?</h2>
 
     <p>
-      I have created a Python interpreter for Poetic. You can download it on
-      <a href="../download/index.html">the Download page</a>, and you can run it on
-      your favorite terminal using something similar to this:
+      The name reflects this: a Bespoke program is tailor-made, fitted exactly to
+      the prose that carries it.
     </p>
 
-    <div class="cmd">poetic.py [ -i input-file ] [ -w ] poetic-program</div>
+    <h2 id="how-to-write">How do I write and run Bespoke programs?</h2>
 
     <p>
-      <span class="inline-code">poetic-program</span> is the program file which you want to run as Poetic
-      code. (It can have any extension, though <span class="inline-code">.ptc</span> is recommended.)
+      Install the interpreter (see the <a href="../download/index.html">Download</a> page)
+      and run:
     </p>
 
-    <p>The options are optional, but if included, they do the following:</p>
-
-    <ul>
-      <li><strong>-i / --input</strong> — Take input from a specified file, instead of STDIN.</li>
-      <li><strong>-w / --wimpmode</strong> — Interpret program in wimpmode (programs are a series of numbers, instead of words).</li>
-    </ul>
+    <div class="cmd">bespoke.py [ -i input-file ] program.bspk</div>
 
     <p>
-      As for writing them, consult the <a href="../tutorial/index.html">tutorial</a>
-      for guidance on how to intentionally write working programs. (Or, perhaps you
-      can try "running" a piece of regular poetry, and seeing what happens!)
+      For writing programs, consult the <a href="../tutorial/index.html">Tutorial</a>.
+      You can also experiment in your browser on the
+      <a href="../tio/index.html">Try It Online</a> page.
     </p>
 
-    <h2 id="who-made-this">Who's the weirdo that made this?</h2>
-
-    <p>Okay, first off: that's rude.</p>
+    <h2 id="who-made-this">Who made this?</h2>
 
     <p>
-      This was made by Josiah Winslow, who, for the second time, decided that the
-      easiest way to create website content for a web development class assignment
-      would be to make a complete programming language. The professor who assigned
-      this project was Jonathan Meersman, so he is partly to blame here as well.
+      Bespoke was designed and implemented by
+      <a href="https://github.com/WinslowJosiah">Josiah Winslow</a>.
+      This site is an adaptation of the original Poetic site, rebranded for Bespoke.
     </p>
 
-    <h2 id="strange-poems">Why do the poems seem so strange?</h2>
+    <h2 id="strange-prose">Why does the prose seem so strange?</h2>
 
     <p>
-      Such is the nature of fitting words in a natural language to certain lengths.
-      Also, part of the objective of Poetic is to have its programs look like abstract
-      poetry, which is extremely difficult to analyse.
+      Fitting natural-language words to specific length sequences is genuinely
+      difficult. The goal is for programs to read as plausible prose — or at least
+      interesting abstract poetry — while each word secretly encodes a digit in the
+      instruction stream.
     </p>
 
-    <h2 id="too-hard">Poetic programs are too hard to write!</h2>
+    <h2 id="practical">Are there practical uses for Bespoke?</h2>
 
     <p>
-      I understand! It's not always easy to write compelling literature and have it
-      execute as code. This is why I added an option to the Python interpreter that
-      makes it easier to write functioning programs. If you run the interpreter like
-      this on your favorite terminal:
+      Bespoke is Turing-complete and can in theory compute anything computable.
+      In practice it is an esoteric language primarily meant for exploration, art,
+      and the peculiar challenge of writing executable literature.
     </p>
-
-    <div class="cmd">poetic.py -w poetic-program</div>
-
-    <p>
-      …then the <span class="inline-code">poetic-program</span> file will be interpreted as the literal
-      digits in the file, instead of converting from the lengths of its words.
-    </p>
-
-    <h2 id="practical-uses">Are there any practical uses for Poetic?</h2>
-
-    <p>I sure hope not.</p>
 
   </main>
 
   <hr>
 
-  <footer id="contact-info">
-    1-414-488-5732
-    <a href="mailto:winslowjosiah@gmail.com">winslowjosiah@gmail.com</a>
-    <a href="https://twitter.com/WinslowJosiah">@WinslowJosiah</a><br>
-    &copy; Copyright Josiah Winslow 2018.
-  </footer>
 </body>
 </html>

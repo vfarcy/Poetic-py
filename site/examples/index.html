@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POETIC — Examples</title>
+  <title>BESPOKE — Examples</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
   <header>
-    <h1>POETIC</h1>
-    <h2>Poetry in Execution</h2>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
   </header>
 
   <nav>
     <ul>
-      <li><a href="../index.html">Poetic</a></li>
+      <li><a href="../index.html">Bespoke</a></li>
       <li><a href="../tutorial/index.html">Tutorial</a></li>
       <li class="active"><a href="index.html">Examples</a></li>
       <li><a href="../tio/index.html">Try It Online</a></li>
@@ -32,200 +32,104 @@
     <div id="toc-container">
       <h3>On this page:</h3>
       <ul>
-        <li><a href="#hello">Hello World!</a></li>
-        <li><a href="#cat">Cat Program</a></li>
-        <li><a href="#reverse">Reverse Input</a></li>
+        <li><a href="#hello">Hello, World!</a></li>
+        <li><a href="#fibonacci">Fibonacci</a></li>
+        <li><a href="#truth">Truth Machine</a></li>
         <li><a href="#asciiloop">ASCII Loop</a></li>
-        <li><a href="#random">Random Number</a></li>
       </ul>
     </div>
 
     <p>
-      This page contains some examples of programs written in Poetic, as well as
-      explanations as to how some of them work. As a secondary goal to functionality,
-      each of these programs is meant to be as literarily interesting as possible.
+      This page contains example programs written in Bespoke, along with explanations
+      of how they work. Each program aims to read as natural prose while doing
+      something interesting computationally.
     </p>
 
-    <h2 id="hello">Hello World!</h2>
+    <h2 id="hello">Hello, World!</h2>
 
-  <pre>the proverbial "unconsciousness"
+<pre>more peppermint tea?
+ah yes, it's not bad
+I appreciate peppermint tea
+it's a
+refreshing beverage
 
-i was already aware
-i had understood fully
+but you immediately must try the gingerbread
+I had it
+sometime, forever ago
+oh, and it was so good!
+made the way a gingerbread must clearly be
+baked
 
-i
-saw the devil
-i was perfectly still
-involuntarily i paused
-
-there said i:
-my
-sheer consciousness
-of certain given circumstances
-i noticed
-it's nothing
-    
-nothing
-     nothing any man wouldn't learn
-
-a way of finding these
-i know
-not
-
-nothing common or typical
-and yet (somehow)
-very little thought
-will normally
-resolve every contradiction
-
-a foolish heart -> an eternal misfortune</pre>
+in fact, I've got a suggestion
+I may go outside
+to Marshal Mellow's
+Bakery
+so we both receive one</pre>
 
     <p>
-      This is the classic "Hello World" example. It is equivalent to the following
-      <a href="https://esolangs.org/wiki/Brainf***">brainf***</a> code:
+      This warm tea-shop conversation is actually a complete "Hello, World!" program.
+      Each word contributes its letter-count to the instruction stream; the actual
+      meaning of the words is irrelevant to the machine, yet every detail has been
+      chosen so that the prose sounds natural.
+    </p>
+    <p>
+      The program pushes the codepoints of each letter in "Hello, World!" onto the
+      stack and outputs them one by one using <span class="inline-code">OUTPUT CH</span>.
     </p>
 
-    <div class="cmd">++++++++++[&gt;+++++++&gt;++++++++++&gt;+++&gt;+++++++++&gt;+&lt;&lt;&lt;&lt;&lt;-]&gt;++.&gt;+.+++++++..+++.&gt;++.&gt;---.&lt;&lt;.+++.------.--------.&gt;+.&gt;&gt;.</div>
+    <h2 id="fibonacci">Fibonacci</h2>
+
+<pre>read a note I wrote you
+it says "someone shall love you,
+as big as past lovers
+did,
+put in a collection"
+surely it will be
+in truth, somebody here is probably
+isolated
+existing in pain without you</pre>
 
     <p>
-      While I do believe that this is the easiest version to understand, there are
-      multiple ways to write this same program. Perhaps the really daring can try to
-      find the shortest possible Hello World program in Poetic.
+      This short poem takes a number <em>N</em> as input and outputs the first <em>N</em>
+      Fibonacci numbers, one per line. The stack holds the two most recent values while a
+      counter decrements toward zero. The <span class="inline-code">CONTROL WHILE</span>
+      loop continues as long as the counter is positive.
     </p>
 
-    <h2 id="cat">Cat Program</h2>
+    <h2 id="truth">Truth Machine</h2>
 
-  <pre>stranger, i confess
-i have longstanding problems
-i'm unprepared for</pre>
-
-    <p>
-      This program copies its input directly to output, and it is in the form of a
-      haiku. Note that this displays a quirk with EOF in Poetic: upon reaching the end
-      of the input stream, the IN command (8) no longer changes the value of the
-      current byte.
-    </p>
-
-    <h2 id="reverse">Reverse Input</h2>
-
-  <pre>whenever i drink a beverage
-i'm always intoxicated
-
-.egnarts yllaeR
-
-i am
-inebriated</pre>
+<pre>there I stumble
+falling up
+even whilst I go down
+falling out</pre>
 
     <p>
-      This program takes its input, lays out each character sequentially in memory,
-      then outputs them in reverse. This is illustrated in the poem as the subject
-      drinking so much that his perception of reality is literally reversed, with even
-      his comments on his own situation being backwards.
+      The classic truth machine: reads a single character from input. If it is
+      <span class="inline-code">'0'</span>, output <span class="inline-code">0</span> once and halt.
+      If it is <span class="inline-code">'1'</span>, output <span class="inline-code">1</span> forever.
+      Four words, four instructions — and a vague sense of existential vertigo.
     </p>
 
     <h2 id="asciiloop">ASCII Loop</h2>
 
-  <pre>love is a great mystery
-but i couldn't really explain it</pre>
+<pre>love
+mysterious, strange, cryptic as ever
+defies an explicit meaning
+has you in
+place, frozen
+spinning around, and left delirious
+spouting complete gibberish
+without end</pre>
 
     <p>
-      Just for the sake of having another short, easy-to-understand example, this is a
-      program that infinitely prints out every ASCII character. It is equivalent to
-      the following <a href="https://esolangs.org/wiki/Brainf***">brainf***</a> code:
-    </p>
-
-    <div class="cmd">--[&gt;&gt;&gt;&gt;&gt;&gt;&gt;+.&lt;&lt;&lt;&lt;&lt;&lt;&lt;]</div>
-
-    <p>
-      The code <span class="inline-code">+[&gt;+.&lt;]</span> would work just the same, but some artistic
-      liberties were exercised in order to create the most interesting poem. Also,
-      because this program loops infinitely, the END command (0) is not needed.
-    </p>
-
-    <h2 id="random">Random Number</h2>
-
-  <pre>[ LIGHTNING ]
-
-*a flash!*
-*a zap!*
-*a flash!*
-*a zap!*
-
-a...Fourth of July?
-
-I
-am still electrified.
-Inside, I see a burst of flames...
-...a fire...
-
-I am the
-source.
-
-LEAVE IMMEDIATELY
-BEHOLD, A HUGE METEOR CRASH
-IMMEDIATELY LEAVE
-
-I was
-frightened
-almost traumatized
-
-Have I heard hallucinations?
-Unspeakable evils?
-
-I
-say...
-	I think no.
-
-No, their progression and advancement isn't a threat.
-
-I
-say...
-	I think I am worse.
-I say...
-	I think I'm no longer light.
-	I'm
-shade.
-	Inescapable dark.
-
-I am now sinister.
-
-I think I see little,
-except a dark,
-impenetrable cloud...
-
-No...no...never...
-...I am purely-intentioned...
-
-I still
-try...
-...try fighting longer....
-
-Too late.
-
-I am truly with my people.
-Mischievous,
-devious...
-...a dark disappearing animal.
-
-Gloomy night now is EVERYWHERE.</pre>
-
-    <p>
-      This program outputs a random number from 0 to 255, in decimal. This is meant to
-      demonstrate the RND command (9), which is represented here by the first word,
-      <code>[ LIGHTNING ]</code>. This program uses a custom routine to output the
-      current byte as a decimal number, dividing by 10 and taking the remainder until
-      the result is 0 to get all of the digits.
+      Loops forever, printing every printable ASCII character in sequence, starting
+      from the space character (32) and cycling back. The poem mirrors this endless
+      repetition — something spinning, something without end.
     </p>
 
   </main>
 
   <hr>
 
-  <footer id="contact-info">
-    1-414-488-5732
-    <a href="mailto:winslowjosiah@gmail.com">winslowjosiah@gmail.com</a>
-    <a href="https://twitter.com/WinslowJosiah">@WinslowJosiah</a><br>
-    &copy; Copyright Josiah Winslow 2018.
-  </footer>
 </body>
 </html>

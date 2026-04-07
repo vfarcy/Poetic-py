@@ -5,9 +5,9 @@ import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 try:
-    from poetic_engine import PoeticRuntimeError, run_poetic
+    from bespoke_engine import BespokeRuntimeError, run_bespoke
 except ImportError:
-    from tools.poetic_engine import PoeticRuntimeError, run_poetic
+    from tools.bespoke_engine import BespokeRuntimeError, run_bespoke
 
 
 class SiteHandler(SimpleHTTPRequestHandler):
@@ -56,23 +56,21 @@ class SiteHandler(SimpleHTTPRequestHandler):
 
         source = data.get("source", "")
         input_text = data.get("input", "")
-        wimpmode = bool(data.get("wimpmode", False))
 
         if not isinstance(source, str) or not isinstance(input_text, str):
             self._send_json(400, {"ok": False, "error": "Fields 'source' and 'input' must be strings"})
             return
 
         try:
-            result = run_poetic(
+            result = run_bespoke(
                 source=source,
                 input_text=input_text,
-                wimpmode=wimpmode,
                 max_steps=500000,
                 max_output=100000,
-                time_limit_s=2.0,
+                time_limit_s=5.0,
             )
             self._send_json(200, {"ok": True, **result})
-        except PoeticRuntimeError as exc:
+        except BespokeRuntimeError as exc:
             self._send_json(200, {"ok": False, "error": str(exc)})
         except Exception:
             self._send_json(500, {"ok": False, "error": "Internal server error"})
