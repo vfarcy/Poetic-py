@@ -149,7 +149,7 @@
             } else {
               setApiStatus(false);
               statusEl.textContent = 'Error';
-              outputEl.textContent = `Could not reach ${apiUrl}. Start: python serve_site.py --port 8000 then open http://127.0.0.1:8000/tio/index.html`;
+              outputEl.textContent = `Could not reach ${apiUrl}. Start: python app.py --port 8000 then open http://127.0.0.1:8000/tio/index.html`;
             }
           } finally {
             controller = null;
