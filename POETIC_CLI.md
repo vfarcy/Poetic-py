@@ -1,7 +1,6 @@
 # MANUAL - Poetic-py (source: origin/main)
 
-Ce document decrit l'etat de la branche `main` du depot `vfarcy/Poetic-py`.
-Il ne decrit pas les ajouts de branches de travail (site local, serveur web, etc.).
+Ce document decrit le fonctionnement de ```poetic.py```.
 
 ## 1) Vue d'ensemble
 
@@ -277,3 +276,142 @@ Lancer les tests:
 ```powershell
 python tests\run_tests.py
 ```
+
+## 9) Annexe detaillee (parsing, ISA, erreurs)
+
+### 9.1 Comment fonctionne le parsing (comment le texte devient des instructions)
+
+Mode normal (par defaut):
+
+1. Le fichier source est lu en UTF-8.
+2. On remplace chaque caractere non alphabetique par un espace (sauf l'apostrophe `'` qui est supprimee).
+3. Le texte resultant est decoupe en mots (`split`).
+4. Chaque mot est remplace par sa longueur (nombre de lettres). Si la longueur est 10, on utilise le chiffre `0` comme representation (donc 10 -> 0).
+5. On obtient une chaine de chiffres (ex: longueurs de mots -> `"35370..."`).
+6. Ensuite on applique l'expression reguliere `re.findall(r"((?:[3456]\d)|\d)", program)` pour former les tokens:
+    - On capture soit un token a deux chiffres dont le premier est 3, 4, 5 ou 6 (ex: `35`, `40`, `69`) utile pour les instructions qui prennent un argument.
+    - Soit un seul chiffre (`\d`) pour toutes les autres instructions.
+
+Mode wimpmode (`-w` / `--wimpmode`):
+
+1. On ne garde que les caracteres numeriques du fichier. Le reste est ignore.
+2. La meme regex ci-dessus est ensuite appliquee pour former la liste des tokens.
+
+Remarque sur `0`:
+
+- Lorsqu'un token `30`, `31`, ... ou `39` est capture, le second caractere est l'argument. Si cet argument est `0`, il sera traite comme `10` (regle: argument `0` -> valeur `10`).
+- Un token `0` isole (capture comme `\d`) est interprete comme instruction `0` (END).
+
+### 9.2 Format des tokens et arguments
+
+- Chaque element du tableau `program` est une chaine de longueur 1 (ex: `'7'`) ou 2 (ex: `'35'`).
+- Pour chaque element:
+   - `currentInstruction = program[i][0]` -> caractere de l'instruction.
+   - Si possible `currentArgument = int(program[i][1])`. Si l'argument vaut `0`, il est converti en `10`.
+- Seules les instructions `3`, `4`, `5`, `6` exigent un argument (sinon on declenche `Missing argument`).
+
+### 9.3 Architecture memoire et conventions
+
+- Memoire: `memory = bytearray(30000)` -> tableau de 30 000 octets initialises a 0 (similaire a Brainfuck).
+- `memoryPointer` est en 0..29999; les deplacements utilisent `mod len(memory)` (wrap-around).
+- Les octets sont traites modulo 256 (operations INC/DEC font `% 256`).
+- EOF input handling: si on rencontre EOF ou CTRL+Z (valeur 26), la lecture met `eofReached = True` et les instructions IN ulterieures ne modifient pas la memoire.
+
+### 9.4 Instructions (0-9)
+
+`0` - END
+
+- Effet: termine l'execution (sortie immediate de la boucle principale).
+- Note: si `0` apparait comme argument (par ex. dans token `30`) il est d'abord converti en `10` avant usage, donc `30` signifie INC de 10.
+
+`1` - IF
+
+- Syntaxe: `1`.
+- Effet: si la case memoire courante est egale a 0, saute l'execution jusqu'apres le EIF correspondant (gestion de la profondeur imbriquee).
+- Erreur: `Mismatched IF/EIF` si on ne trouve pas d'EIF.
+
+`2` - EIF
+
+- Syntaxe: `2`.
+- Effet: si la case memoire courante n'est pas egale a 0, saute en arriere jusqu'avant le IF correspondant (boucle).
+- Erreur: `Mismatched IF/EIF` si on ne trouve pas d'IF.
+
+`3` - INC
+
+- Syntaxe: token a 2 caracteres dont le premier est `3` (ex. `35`).
+- Argument: deuxieme chiffre (0..9); si argument == 0 alors valeur utilisee = 10.
+- Effet: `memory[pointer] = (memory[pointer] + argument) % 256`.
+- Erreur: `Missing argument` si absent.
+
+`4` - DEC
+
+- Syntaxe: token commencant par `4` (ex. `42`).
+- Argument: second chiffre, 0->10.
+- Effet: `memory[pointer] = (memory[pointer] - argument) % 256`.
+- Erreur: `Missing argument` si absent.
+
+`5` - FWD
+
+- Syntaxe: token commencant par `5` (ex. `51`).
+- Argument: second chiffre, 0->10.
+- Effet: `memoryPointer = (memoryPointer + argument) % len(memory)`.
+- Erreur: `Missing argument` si absent.
+
+`6` - BAK
+
+- Syntaxe: token commencant par `6` (ex. `63`).
+- Argument: second chiffre, 0->10.
+- Effet: `memoryPointer = (memoryPointer - argument) % len(memory)`.
+- Erreur: `Missing argument` si absent.
+
+`7` - OUT
+
+- Syntaxe: `7`.
+- Effet: affiche le caractere ASCII represente par l'octet courant (`print(chr(memory[memoryPointer]), end="", flush=True)`).
+
+`8` - IN
+
+- Syntaxe: `8`.
+- Effet: lit 1 caractere depuis `inputStream.read(1)` et stocke `ord(char) % 256` dans la case courante.
+- Si on lit CTRL+Z (26), le code marque `eofReached = True`.
+- Si EOF atteint, l'instruction IN ne modifie pas la memoire.
+
+`9` - RND
+
+- Syntaxe: `9`.
+- Effet: `memory[memoryPointer] = random.randint(0,255)`.
+
+### 9.5 Erreurs et messages geres
+
+- `Unexpected EOF`: on a depasse la fin du tableau `program` sans rencontrer un `0` (END).
+- `Missing argument`: instruction `3`/`4`/`5`/`6` sans argument.
+- `Mismatched IF/EIF`: pas d'IF correspondant lors du saut avant/arriere.
+- Tous les `error(...)` ecrivent sur STDERR et appellent `sys.exit(1)`.
+
+### 9.6 Subtilites importantes
+
+- Seuls `3..6` peuvent former des tokens a deux chiffres (instruction + argument). D'ou la regex qui attrape deux chiffres seulement si le premier est 3-6.
+- L'argument `0` dans une instruction a argument est interprete comme `10`.
+- Les deplacements et valeurs sont circulaires (pointer modulo taille memoire, bytes modulo 256).
+- `inputStream`: si l'option `-i/--input` est fournie, le fichier est ouvert; sinon on utilise STDIN.
+
+### 9.7 Exemples rapides
+
+Executer le programme `hello.ptc`:
+
+```powershell
+python poetic.py hello.ptc
+```
+
+Mode wimpmode (le fichier contient directement des chiffres):
+
+```powershell
+python poetic.py -w program_with_digits.ptc
+```
+
+### 9.8 Ecrire un petit poeme -> tokenisation (exemple simplifie)
+
+- Texte: `"love is a great mystery"`
+- Etapes: on retire les caracteres non-alphabetiques -> mots = `["love", "is", "a", "great", "mystery"]`
+- Longueurs = `[4,2,1,5,7]` -> chiffres concat en `"42157"`
+- Application de la regex de tokens: `['4','2','1','5','7']` -> instructions DEC 2, IF, END/..., etc. (exemple pedagogique, le resultat reel depend de la suite complete du texte)
