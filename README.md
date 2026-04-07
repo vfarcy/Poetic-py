@@ -1,5 +1,7 @@
 Poetic (esolang) — interpréteur Python + site archivé
 
+[![Site GitHub Pages](https://img.shields.io/badge/site-GitHub%20Pages-1f6feb)](https://vfarcy.github.io/Poetic-py/)
+
 Références
 
 - Internet Archive : https://web.archive.org/web/20210506130651/https://mcaweb.matc.edu/winslojr/vicom128/final/index.html
@@ -102,6 +104,14 @@ Site web (copie archivée) et Try It Online
 Le dossier `site/` est une reconstruction locale du site original (pages, styles, polices, textures).
 
 Depuis la version actuelle, la page TIO locale execute l'interpreteur Poetic directement dans le navigateur (client-side), comme l'archive d'origine.
+
+Publication GitHub Pages
+
+- Une GitHub Action est fournie dans `.github/workflows/deploy-pages.yml` pour publier directement le contenu de `site/` sur GitHub Pages.
+- La publication se declenche sur chaque push vers `main` et peut aussi etre lancee manuellement depuis l'onglet Actions.
+- Dans les reglages du depot GitHub, il faut definir la source GitHub Pages sur `GitHub Actions`.
+- URL attendue du site publie : `https://vfarcy.github.io/Poetic-py/`
+- URL attendue de la page TIO : `https://vfarcy.github.io/Poetic-py/tio/index.html`
 
 Ouverture directe (sans serveur Python):
 
