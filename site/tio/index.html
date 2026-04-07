@@ -53,9 +53,8 @@
 
     <pre id="program-output" data-placeholder="Program output goes here"></pre>
     <p>
-      API status:
-      <strong id="api-status" style="color:#a42537;">Disconnected</strong>
-      <button id="btn-api-check" type="button">Retry</button>
+      Engine:
+      <strong id="engine-status" style="color:#008f11;">Client-side</strong>
     </p>
     <p id="run-status"></p>
 
@@ -65,37 +64,165 @@
         const inputEl = document.getElementById('program-input');
         const outputEl = document.getElementById('program-output');
         const statusEl = document.getElementById('run-status');
-        const apiStatusEl = document.getElementById('api-status');
-        const apiCheckBtn = document.getElementById('btn-api-check');
+        const engineStatusEl = document.getElementById('engine-status');
         const shareBtn = document.getElementById('btn-share');
         const executeBtn = document.getElementById('btn-execute');
         const stopBtn = document.getElementById('btn-stop');
         const wimpmodeBtn = document.getElementById('btn-wimpmode');
 
-        const apiUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
-          ? `${window.location.origin}/api/run`
-          : 'http://127.0.0.1:8000/api/run';
+        engineStatusEl.textContent = 'Client-side';
+        engineStatusEl.style.color = '#008f11';
 
-        let controller = null;
+        let interval = null;
         let running = false;
         let wimpmode = false;
 
-        function setApiStatus(connected) {
-          apiStatusEl.textContent = connected ? 'Connected' : 'Disconnected';
-          apiStatusEl.style.color = connected ? '#008f11' : '#a42537';
+        function tokenizeFromText(text, useWimpmode) {
+          if (useWimpmode) {
+            const program = Array.from(text).filter((ch) => /\d/.test(ch)).join('');
+            return program.match(/((?:[3456]\d)|\d)/g) || [];
+          }
+
+          const cleaned = Array.from(text)
+            .map((ch) => {
+              if (/[A-Za-zÀ-ÖØ-öø-ÿ]/.test(ch)) {
+                return ch;
+              }
+              if (ch === "'") {
+                return '';
+              }
+              return ' ';
+            })
+            .join('');
+
+          const lengths = cleaned
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((word) => (word.length === 10 ? '0' : String(word.length)));
+
+          const program = lengths.join('');
+          return program.match(/((?:[3456]\d)|\d)/g) || [];
         }
 
-        async function checkApiConnection() {
-          try {
-            const response = await fetch(apiUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ source: '', input: '', wimpmode: false })
-            });
-            setApiStatus(response.ok);
-          } catch (err) {
-            setApiStatus(false);
-          }
+        function createExecutor(source, inputText, useWimpmode) {
+          const tokens = tokenizeFromText(source, useWimpmode);
+          let ip = 0;
+          const memory = new Uint8Array(new ArrayBuffer(30000));
+          let mp = 0;
+          let inputPos = 0;
+          let eofReached = false;
+          let output = '';
+          let steps = 0;
+
+          return {
+            tokens: tokens.length,
+            getSteps: () => steps,
+            getOutput: () => output,
+            runChunk(chunkSize) {
+              for (let i = 0; i < chunkSize; i += 1) {
+                const token = tokens[ip];
+                if (!token) {
+                  return { done: true, ok: false, error: 'Unexpected EOF' };
+                }
+
+                const instr = token[0];
+                let arg = null;
+                if (token.length > 1) {
+                  arg = Number(token[1]);
+                  if (arg === 0) {
+                    arg = 10;
+                  }
+                }
+
+                switch (instr) {
+                  case '0':
+                    return { done: true, ok: true };
+                  case '1':
+                    if (!memory[mp]) {
+                      let nested = 1;
+                      while (nested) {
+                        ip += 1;
+                        const t = tokens[ip];
+                        if (!t) {
+                          return { done: true, ok: false, error: 'Mismatched IF/EIF' };
+                        }
+                        if (t[0] === '1') {
+                          nested += 1;
+                        } else if (t[0] === '2') {
+                          nested -= 1;
+                        }
+                      }
+                    }
+                    break;
+                  case '2':
+                    if (memory[mp]) {
+                      let nested = -1;
+                      while (nested) {
+                        ip -= 1;
+                        const t = tokens[ip];
+                        if (!t) {
+                          return { done: true, ok: false, error: 'Mismatched IF/EIF' };
+                        }
+                        if (t[0] === '1') {
+                          nested += 1;
+                        } else if (t[0] === '2') {
+                          nested -= 1;
+                        }
+                      }
+                    }
+                    break;
+                  case '3':
+                    if (arg === null) {
+                      return { done: true, ok: false, error: 'Missing argument' };
+                    }
+                    memory[mp] = (memory[mp] + arg) % 256;
+                    break;
+                  case '4':
+                    if (arg === null) {
+                      return { done: true, ok: false, error: 'Missing argument' };
+                    }
+                    memory[mp] = (memory[mp] + 256 - (arg % 256)) % 256;
+                    break;
+                  case '5':
+                    if (arg === null) {
+                      return { done: true, ok: false, error: 'Missing argument' };
+                    }
+                    mp = (mp + arg) % memory.length;
+                    break;
+                  case '6':
+                    if (arg === null) {
+                      return { done: true, ok: false, error: 'Missing argument' };
+                    }
+                    mp = (mp + memory.length - (arg % memory.length)) % memory.length;
+                    break;
+                  case '7':
+                    output += String.fromCharCode(memory[mp]);
+                    break;
+                  case '8':
+                    if (!eofReached) {
+                      const ch = inputText[inputPos];
+                      if (typeof ch === 'undefined') {
+                        eofReached = true;
+                      } else {
+                        memory[mp] = ch.charCodeAt(0) % 256;
+                        inputPos += 1;
+                      }
+                    }
+                    break;
+                  case '9':
+                    memory[mp] = Math.floor(Math.random() * 256);
+                    break;
+                  default:
+                    return { done: true, ok: false, error: `Unknown instruction: ${instr}` };
+                }
+
+                ip += 1;
+                steps += 1;
+              }
+
+              return { done: false, ok: true };
+            }
+          };
         }
 
         function setRunning(isRunning) {
@@ -104,7 +231,7 @@
           stopBtn.disabled = !isRunning;
         }
 
-        async function runProgram() {
+        function runProgram() {
           if (running) {
             return;
           }
@@ -112,54 +239,35 @@
           statusEl.textContent = 'Running...';
           outputEl.textContent = '';
 
-          controller = new AbortController();
+          const executor = createExecutor(sourceEl.value, inputEl.value, wimpmode);
 
-          try {
-            const response = await fetch(apiUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                source: sourceEl.value,
-                input: inputEl.value,
-                wimpmode: wimpmode
-              }),
-              signal: controller.signal
-            });
+          interval = setInterval(() => {
+            const state = executor.runChunk(100);
+            outputEl.textContent = executor.getOutput();
 
-            const data = await response.json();
-            setApiStatus(true);
-            if (!response.ok) {
-              outputEl.textContent = data.error || 'HTTP error';
-              statusEl.textContent = 'Request failed';
-              return;
+            if (state.done) {
+              clearInterval(interval);
+              interval = null;
+              setRunning(false);
+
+              if (!state.ok) {
+                statusEl.textContent = 'Execution failed';
+                outputEl.textContent += `\nERROR: ${state.error}`;
+                return;
+              }
+
+              statusEl.textContent = `Done (${executor.getSteps()} steps, ${executor.tokens} tokens)`;
             }
-
-            if (!data.ok) {
-              outputEl.textContent = data.error || 'Execution failed';
-              statusEl.textContent = 'Execution failed';
-              return;
-            }
-
-            outputEl.textContent = data.output || '';
-            statusEl.textContent = `Done (${data.steps} steps, ${data.tokens} tokens)`;
-          } catch (err) {
-            if (err.name === 'AbortError') {
-              statusEl.textContent = 'Stopped';
-              outputEl.textContent = 'Execution stopped by user.';
-            } else {
-              setApiStatus(false);
-              statusEl.textContent = 'Error';
-              outputEl.textContent = `Could not reach ${apiUrl}. Start: python app.py --port 8000 then open http://127.0.0.1:8000/tio/index.html`;
-            }
-          } finally {
-            controller = null;
-            setRunning(false);
-          }
+          }, 1);
         }
 
         function stopProgram() {
-          if (controller) {
-            controller.abort();
+          if (interval !== null) {
+            clearInterval(interval);
+            interval = null;
+            setRunning(false);
+            statusEl.textContent = 'Stopped';
+            outputEl.textContent += '\nExecution stopped by user.';
           }
         }
 
@@ -230,11 +338,9 @@
         executeBtn.addEventListener('click', runProgram);
         stopBtn.addEventListener('click', stopProgram);
         shareBtn.addEventListener('click', shareProgram);
-        apiCheckBtn.addEventListener('click', checkApiConnection);
         wimpmodeBtn.addEventListener('click', toggleWimpmode);
         updateWimpmodeButton();
         loadShareState();
-        checkApiConnection();
         setRunning(false);
       })();
     </script>

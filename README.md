@@ -13,7 +13,7 @@ Ce dépôt contient :
 - Des exemples de programmes Poetic : `examples/*.ptc`
 - Des utilitaires de tokenisation/simulation : `tools/`
 - Une copie locale du site Poetic original : `site/`
-- Un serveur local + API pour la page Try It Online : `app.py` + `tools/serve_site.py`
+- Un serveur local + API optionnels pour tests backend : `app.py` + `tools/serve_site.py`
 
 Prérequis
 
@@ -101,6 +101,16 @@ Site web (copie archivée) et Try It Online
 
 Le dossier `site/` est une reconstruction locale du site original (pages, styles, polices, textures).
 
+Depuis la version actuelle, la page TIO locale execute l'interpreteur Poetic directement dans le navigateur (client-side), comme l'archive d'origine.
+
+Ouverture directe (sans serveur Python):
+
+- Ouvrir `site/tio/index.html` dans le navigateur.
+
+Serveur Python (optionnel)
+
+Le serveur reste utile pour servir l'ensemble du site en HTTP et pour tester l'API backend.
+
 Lancer le serveur web local + API :
 
 ```powershell
@@ -112,7 +122,7 @@ Puis ouvrir :
 - Site principal : http://127.0.0.1:8000/
 - Try It Online : http://127.0.0.1:8000/tio/index.html
 
-Endpoint API utilisé par TIO
+Endpoint API backend (optionnel)
 
 - `POST /api/run`
 - Corps JSON :
@@ -138,28 +148,28 @@ Endpoint API utilisé par TIO
 
 Notes sur la page TIO
 
-- `Execute` lance le code via `/api/run`.
-- `Stop` annule la requête navigateur.
+- `Execute` lance le code Poetic dans le navigateur (sans appel API).
+- `Stop` arrete l'execution locale.
 - `Wimpmode OFF/ON` bascule le mode digits.
 - `Share` génère un lien qui stocke source/input/wimpmode dans l’URL.
-- L’indicateur API affiche Connected/Disconnected avec bouton Retry.
+- L'indicateur affiche `Engine: Client-side`.
 
 Structure du projet
 
 - `poetic.py` — interpréteur CLI
-- `app.py` — lanceur racine du serveur website
-- `tools/poetic_engine.py` — runtime Poetic réutilisable pour l’API
-- `tools/serve_site.py` — serveur HTTP + `/api/run`
+- `app.py` — lanceur racine du serveur website (optionnel)
+- `tools/poetic_engine.py` — runtime Poetic réutilisable pour scripts/API backend
+- `tools/serve_site.py` — serveur HTTP + `/api/run` (optionnel)
 - `site/` — pages/assets archivés (dont `site/tio/index.html`)
 - `examples/` — exemples `.ptc`
 - `tests/run_tests.py` — script de test
 
-Dépannage rapide
+Depannage rapide
 
-- Si le port 8000 est déjà pris, utilise un autre port :
+- Si le port 8000 est deja pris, utilise un autre port :
 
 ```powershell
 python app.py --port 8011
 ```
 
-- Puis ouvre l’URL correspondante (`http://127.0.0.1:8011/tio/index.html`).
+- Puis ouvre l'URL correspondante (`http://127.0.0.1:8011/tio/index.html`).

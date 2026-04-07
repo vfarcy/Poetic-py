@@ -279,6 +279,16 @@ python tests\run_tests.py
 
 ## 9) Annexe detaillee (parsing, ISA, erreurs)
 
+## 10) TIO local (etat actuel)
+
+La page TIO locale `site/tio/index.html` execute maintenant Poetic cote navigateur (client-side).
+
+Consequence pratique:
+
+- Pas besoin de lancer `app.py` pour executer un programme depuis la page TIO.
+- Le bouton `Stop` interrompt l'execution locale en cours.
+- Le serveur Python (`app.py` + `tools/serve_site.py`) reste disponible de maniere optionnelle pour servir le site en HTTP et tester l'API backend `/api/run`.
+
 ### 9.1 Comment fonctionne le parsing (comment le texte devient des instructions)
 
 Mode normal (par defaut):
