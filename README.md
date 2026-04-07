@@ -6,7 +6,6 @@ This repository now targets Bespoke as the primary language/runtime.
 
 Migration docs:
 - Changelog: CHANGELOG_BESPOKE.md
-- Poetic legacy notes: README_POETIC_LEGACY.md
 
 Overview
 

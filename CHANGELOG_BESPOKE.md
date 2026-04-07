@@ -1,5 +1,28 @@
 # Changelog - Poetic to Bespoke migration
 
+## 2026-04-07 (cleanup)
+
+Scope: remove remaining Poetic legacy files now that `.ptc` programs are gone.
+
+### Removed
+
+- `poetic.py`
+- `tools/poetic_engine.py`
+- `tools/simulate.py`
+- `tools/simulate_text.py`
+- `tools/tokenize.py`
+- `README_POETIC_LEGACY.md`
+
+### Updated
+
+- `tests/run_tests.py`
+  - Replaced Poetic tests with Bespoke smoke tests:
+    - `examples/helloworld.bspk`
+    - `examples/sum_two_numbers.bspk`
+    - `examples/truth.bspk` (input `0`)
+- `README.md`
+  - Removed reference to legacy Poetic notes
+
 ## 2026-04-07
 
 Scope: replace Poetic with Bespoke on branch `bespokelang`, while preserving the
