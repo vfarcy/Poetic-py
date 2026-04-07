@@ -1,0 +1,325 @@
+/* ── Fonts ── */
+@font-face {
+	font-family: Blackout;
+	src: url("blackout.woff") format("woff");
+}
+
+@font-face {
+	font-family: Trixie;
+	src: url("trixie.woff") format("woff");
+}
+
+/* ── Color variables ── */
+:root {
+	--biscay: #1b425f;
+	--eastern-blue: #1c99c0;
+	--elm: #207078;
+	--japanese-laurel: #008f11;
+	--malachite: #00ff41;
+	--mexican-red: #a42537;
+	--viking: #70bed5;
+	--shark: #292e32;
+	--snow-drift: #f3f6f4;
+
+	--cmd-background-color: black;
+	--cmd-color: var(--malachite);
+
+	--button-border-color: var(--shark);
+	--button-good-color: var(--japanese-laurel);
+	--button-good-background-color: var(--snow-drift);
+	--button-good-hover-color: var(--snow-drift);
+	--button-good-hover-background-color: var(--japanese-laurel);
+	--button-bad-color: var(--mexican-red);
+	--button-bad-background-color: var(--snow-drift);
+	--button-bad-hover-color: var(--snow-drift);
+	--button-bad-hover-background-color: var(--mexican-red);
+
+	--hr-color: var(--eastern-blue);
+
+	--link-color: var(--eastern-blue);
+	--link-visited-color: var(--elm);
+
+	--nav-bar-color: var(--viking);
+	--nav-link-color: var(--shark);
+	--nav-bar-hover-color: var(--biscay);
+	--nav-link-hover-color: var(--snow-drift);
+	--nav-bar-active-color: var(--eastern-blue);
+	--nav-link-active-color: var(--shark);
+	--nav-bar-border-color: var(--shark);
+
+	--table-background-color: var(--viking);
+	--table-border-color: var(--shark);
+	--table-header-background-color: var(--biscay);
+	--table-header-color: var(--snow-drift);
+
+	--toc-background-color: var(--viking);
+	--toc-border-color: var(--shark);
+	--toc-link-color: var(--shark);
+}
+
+/* ── Base ── */
+body {
+	background: url("images/light-paper.png");
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 0;
+	padding: 0 1em;
+}
+
+p {
+	font-size: 1.08em;
+}
+
+/* ── Header ── */
+header {
+	text-align: center;
+}
+
+h1, h2 {
+	font-family: Blackout;
+	margin: 0;
+	letter-spacing: 2px;
+}
+
+h1 {
+	font-size: 800%;
+	text-shadow: -5px 5px 10px gray;
+}
+
+h2 {
+	font-size: 350%;
+	margin: 10px 0;
+}
+
+/* ── HR ── */
+hr {
+	border: 2px solid var(--hr-color);
+	margin: 1.5em 0;
+}
+
+/* ── Links ── */
+a {
+	color: var(--link-color);
+}
+
+a:visited {
+	color: var(--link-visited-color);
+}
+
+/* ── Navigation bar ── */
+nav ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+nav li {
+	list-style-type: none;
+	background-color: var(--nav-bar-color);
+	border: 2px solid var(--nav-bar-border-color);
+	border-radius: 8px;
+	margin: 5px 5px;
+	float: left;
+	overflow: auto;
+	width: -moz-fit-content;
+	width: -webkit-fit-content;
+	width: fit-content;
+	position: relative;
+	transition: background 1s ease;
+}
+
+nav a,
+nav a:visited {
+	display: block;
+	color: var(--nav-link-color);
+	font-size: 16px;
+	text-align: center;
+	text-decoration: none;
+	padding: 10px 15px;
+	transition: color 1s ease, padding-left 1s ease;
+}
+
+nav li.active {
+	background-color: var(--nav-bar-active-color);
+}
+
+nav li.active a {
+	color: var(--nav-link-active-color);
+}
+
+nav li:not(.active):hover {
+	background-color: var(--nav-bar-hover-color);
+}
+
+nav li:not(.active):hover a {
+	color: var(--nav-link-hover-color);
+	padding-left: 1.8em;
+}
+
+/* ── TOC ── */
+#toc-container {
+	background: var(--toc-background-color);
+	border: 2px solid var(--toc-border-color);
+	width: 25%;
+	min-width: -webkit-fit-content;
+	min-width: -moz-fit-content;
+	min-width: fit-content;
+	float: right;
+	margin: 20px 15px;
+	padding: 0;
+}
+
+#toc-container h3 {
+	font-family: Garamond, 'Times New Roman', serif;
+	text-align: center;
+	font-size: 150%;
+	padding: 0 0.7em;
+}
+
+#toc-container ul {
+	list-style-type: none;
+	padding: 0 0.7em;
+}
+
+#toc-container li {
+	list-style-type: none;
+	padding: 0.3em 0;
+}
+
+#toc-container a,
+#toc-container a:visited {
+	color: var(--toc-link-color);
+}
+
+/* ── Tables ── */
+.table-container {
+	overflow-x: auto;
+}
+
+table {
+	border: 3px solid var(--table-border-color);
+	border-collapse: collapse;
+	background-color: var(--table-background-color);
+}
+
+th, td {
+	border: 3px solid var(--table-border-color);
+	padding: 0.5em;
+	text-align: center;
+	font-size: 105%;
+}
+
+th {
+	font-family: Garamond, 'Times New Roman', serif;
+	font-size: 150%;
+	background-color: var(--table-header-background-color);
+	color: var(--table-header-color);
+}
+
+/* ── Pre / poem / code blocks ── */
+pre, textarea, input[type="text"], input[type="email"], input[type="search"] {
+	overflow: auto;
+	border: 2px solid black;
+	background: url("images/paper.png");
+	font-family: Trixie;
+	padding: 11px;
+	font-size: 25px;
+	line-height: 25px;
+	margin: 5px 0;
+	outline: none;
+	width: -moz-fit-content;
+	width: -webkit-fit-content;
+	width: fit-content;
+	max-width: 90%;
+	box-shadow: 0 10px 15px 0 grey;
+	resize: none;
+	display: block;
+}
+
+pre[data-placeholder]:empty::before {
+	content: attr(data-placeholder);
+	color: gray;
+}
+
+.inline-code {
+	overflow: auto;
+	font-family: Trixie;
+	font-size: 25px;
+	padding: 0 4px;
+}
+
+/* ── Command-line blocks ── */
+.cmd {
+	overflow: auto;
+	background-color: var(--cmd-background-color);
+	color: var(--cmd-color);
+	font-family: Consolas, 'Courier New', monospace;
+	padding: 11px;
+	width: -moz-fit-content;
+	width: -webkit-fit-content;
+	width: fit-content;
+}
+
+/* ── Buttons (original look) ── */
+button {
+	font-family: Trixie;
+	font-size: 25px;
+	border: 2px solid var(--button-border-color);
+	border-radius: 8px;
+	margin: 10px 0;
+	box-shadow: 0 8px gray;
+	outline: none;
+	cursor: pointer;
+	white-space: pre;
+	transition: all 0.5s ease, transform 0.1s linear, box-shadow 0.1s linear;
+}
+
+button.good {
+	background: var(--button-good-background-color);
+	color: var(--button-good-color);
+}
+
+button.bad {
+	background: var(--button-bad-background-color);
+	color: var(--button-bad-color);
+}
+
+button.good:hover {
+	background: var(--button-good-hover-background-color);
+	color: var(--button-good-hover-color);
+}
+
+button.bad:hover {
+	background: var(--button-bad-hover-background-color);
+	color: var(--button-bad-hover-color);
+}
+
+button:active {
+	transform: translateY(4px);
+	box-shadow: 0 4px gray;
+}
+
+/* ── Footer / contact info ── */
+#contact-info {
+	font-size: 0.9em;
+}
+
+/* ── Clearfix for floats ── */
+.clearfix::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+/* ── Responsive ── */
+@media screen and (max-width: 767px) {
+	nav li {
+		float: none;
+		margin: 5px auto;
+	}
+
+	#toc-container {
+		float: none;
+		width: 100%;
+	}
+}

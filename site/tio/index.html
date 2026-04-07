@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POETIC — Try It Online</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header>
+    <h1>POETIC</h1>
+    <h2>Poetry in Execution</h2>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html">Poetic</a></li>
+      <li><a href="../tutorial/index.html">Tutorial</a></li>
+      <li><a href="../examples/index.html">Examples</a></li>
+      <li class="active"><a href="index.html">Try It Online</a></li>
+      <li><a href="../download/index.html">Download</a></li>
+      <li><a href="../faq/index.html">FAQ</a></li>
+      <li><a href="../contact/index.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <hr>
+
+  <main>
+    <p>
+      This page hosts an online interpreter for Poetic. If you are an aspiring poet,
+      you may run your poems here by entering them in the poem box below, entering any
+      input your poem might require, and clicking Execute. Alternatively, you may
+      visit the <a href="../download/index.html">Download</a> page to download interpreters
+      that you can run on your computer.
+    </p>
+
+    <h2>Poetic Online Interpreter</h2>
+
+    <textarea id="program-source" rows="10" cols="70" placeholder="Program source goes here"></textarea>
+
+    <textarea id="program-input" rows="6" cols="50" placeholder="Program input goes here"></textarea>
+
+    <button id="btn-share" type="button">Share</button>
+    <button id="btn-execute" class="good" type="button">Execute</button>
+    <button id="btn-stop" class="bad" type="button">Stop</button>
+
+    <p>
+      Wimpmode
+      <button id="btn-wimpmode" class="bad" type="button">OFF</button>
+    </p>
+
+    <pre id="program-output" data-placeholder="Program output goes here"></pre>
+    <p>
+      API status:
+      <strong id="api-status" style="color:#a42537;">Disconnected</strong>
+      <button id="btn-api-check" type="button">Retry</button>
+    </p>
+    <p id="run-status"></p>
+
+    <script>
+      (function () {
+        const sourceEl = document.getElementById('program-source');
+        const inputEl = document.getElementById('program-input');
+        const outputEl = document.getElementById('program-output');
+        const statusEl = document.getElementById('run-status');
+        const apiStatusEl = document.getElementById('api-status');
+        const apiCheckBtn = document.getElementById('btn-api-check');
+        const shareBtn = document.getElementById('btn-share');
+        const executeBtn = document.getElementById('btn-execute');
+        const stopBtn = document.getElementById('btn-stop');
+        const wimpmodeBtn = document.getElementById('btn-wimpmode');
+
+        const apiUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+          ? `${window.location.origin}/api/run`
+          : 'http://127.0.0.1:8000/api/run';
+
+        let controller = null;
+        let running = false;
+        let wimpmode = false;
+
+        function setApiStatus(connected) {
+          apiStatusEl.textContent = connected ? 'Connected' : 'Disconnected';
+          apiStatusEl.style.color = connected ? '#008f11' : '#a42537';
+        }
+
+        async function checkApiConnection() {
+          try {
+            const response = await fetch(apiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ source: '', input: '', wimpmode: false })
+            });
+            setApiStatus(response.ok);
+          } catch (err) {
+            setApiStatus(false);
+          }
+        }
+
+        function setRunning(isRunning) {
+          running = isRunning;
+          executeBtn.disabled = isRunning;
+          stopBtn.disabled = !isRunning;
+        }
+
+        async function runProgram() {
+          if (running) {
+            return;
+          }
+          setRunning(true);
+          statusEl.textContent = 'Running...';
+          outputEl.textContent = '';
+
+          controller = new AbortController();
+
+          try {
+            const response = await fetch(apiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                source: sourceEl.value,
+                input: inputEl.value,
+                wimpmode: wimpmode
+              }),
+              signal: controller.signal
+            });
+
+            const data = await response.json();
+            setApiStatus(true);
+            if (!response.ok) {
+              outputEl.textContent = data.error || 'HTTP error';
+              statusEl.textContent = 'Request failed';
+              return;
+            }
+
+            if (!data.ok) {
+              outputEl.textContent = data.error || 'Execution failed';
+              statusEl.textContent = 'Execution failed';
+              return;
+            }
+
+            outputEl.textContent = data.output || '';
+            statusEl.textContent = `Done (${data.steps} steps, ${data.tokens} tokens)`;
+          } catch (err) {
+            if (err.name === 'AbortError') {
+              statusEl.textContent = 'Stopped';
+              outputEl.textContent = 'Execution stopped by user.';
+            } else {
+              setApiStatus(false);
+              statusEl.textContent = 'Error';
+              outputEl.textContent = `Could not reach ${apiUrl}. Start: python serve_site.py --port 8000 then open http://127.0.0.1:8000/tio/index.html`;
+            }
+          } finally {
+            controller = null;
+            setRunning(false);
+          }
+        }
+
+        function stopProgram() {
+          if (controller) {
+            controller.abort();
+          }
+        }
+
+        function updateWimpmodeButton() {
+          wimpmodeBtn.textContent = wimpmode ? 'ON' : 'OFF';
+          wimpmodeBtn.classList.toggle('good', wimpmode);
+          wimpmodeBtn.classList.toggle('bad', !wimpmode);
+        }
+
+        function encodeSharePayload(payload) {
+          return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        }
+
+        function decodeSharePayload(raw) {
+          return JSON.parse(decodeURIComponent(escape(atob(raw))));
+        }
+
+        async function shareProgram() {
+          const payload = {
+            s: sourceEl.value,
+            i: inputEl.value,
+            w: wimpmode ? 1 : 0
+          };
+          const encoded = encodeSharePayload(payload);
+          const url = `${window.location.origin}${window.location.pathname}?state=${encodeURIComponent(encoded)}`;
+
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(url);
+              statusEl.textContent = 'Share link copied to clipboard.';
+              return;
+            }
+          } catch (err) {
+            // Fallback below.
+          }
+
+          window.prompt('Copy this share link:', url);
+          statusEl.textContent = 'Share link generated.';
+        }
+
+        function loadShareState() {
+          const params = new URLSearchParams(window.location.search);
+          const raw = params.get('state');
+          if (!raw) {
+            return;
+          }
+          try {
+            const payload = decodeSharePayload(raw);
+            if (typeof payload.s === 'string') {
+              sourceEl.value = payload.s;
+            }
+            if (typeof payload.i === 'string') {
+              inputEl.value = payload.i;
+            }
+            wimpmode = !!payload.w;
+            updateWimpmodeButton();
+            statusEl.textContent = 'Shared program loaded.';
+          } catch (err) {
+            statusEl.textContent = 'Invalid share link.';
+          }
+        }
+
+        function toggleWimpmode() {
+          wimpmode = !wimpmode;
+          updateWimpmodeButton();
+        }
+
+        executeBtn.addEventListener('click', runProgram);
+        stopBtn.addEventListener('click', stopProgram);
+        shareBtn.addEventListener('click', shareProgram);
+        apiCheckBtn.addEventListener('click', checkApiConnection);
+        wimpmodeBtn.addEventListener('click', toggleWimpmode);
+        updateWimpmodeButton();
+        loadShareState();
+        checkApiConnection();
+        setRunning(false);
+      })();
+    </script>
+  </main>
+
+  <hr>
+
+  <footer id="contact-info">
+    1-414-488-5732
+    <a href="mailto:winslowjosiah@gmail.com">winslowjosiah@gmail.com</a>
+    <a href="https://twitter.com/WinslowJosiah">@WinslowJosiah</a><br>
+    &copy; Copyright Josiah Winslow 2018.
+  </footer>
+
+</body>
+</html>
