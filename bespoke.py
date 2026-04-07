@@ -38,7 +38,8 @@ except FileNotFoundError:
 
 # Read input
 if args.input is None:
-    input_text = sys.stdin.read()
+    # Avoid blocking when launched from an interactive terminal with no piped input.
+    input_text = "" if sys.stdin.isatty() else sys.stdin.read()
 else:
     try:
         with open(args.input, encoding="utf-8") as f:
