@@ -1,53 +1,53 @@
-Poetic (esolang) — Python interpreter + archived website
+Poetic (esolang) — interpréteur Python + site archivé
 
-References
+Références
 
-- Internet Archive: https://web.archive.org/web/20210506130651/https://mcaweb.matc.edu/winslojr/vicom128/final/index.html
-- Esolang page: https://esolangs.org/wiki/Poetic_(esolang)
+- Internet Archive : https://web.archive.org/web/20210506130651/https://mcaweb.matc.edu/winslojr/vicom128/final/index.html
+- Page Esolang : https://esolangs.org/wiki/Poetic_(esolang)
 
-Overview
+Vue d’ensemble
 
-This repository contains:
+Ce dépôt contient :
 
-- A Python interpreter for Poetic: `poetic.py`
-- Example Poetic programs: `examples/*.ptc`
-- Utility scripts for tokenization/simulation: `tools/`
-- A local copy of the original Poetic website: `site/`
-- A local server/API to run the Try It Online page: `app.py` + `tools/serve_site.py`
+- Un interpréteur Python pour Poetic : `poetic.py`
+- Des exemples de programmes Poetic : `examples/*.ptc`
+- Des utilitaires de tokenisation/simulation : `tools/`
+- Une copie locale du site Poetic original : `site/`
+- Un serveur local + API pour la page Try It Online : `app.py` + `tools/serve_site.py`
 
-Requirements
+Prérequis
 
-- Python 3.10+ (works on Windows PowerShell and standard terminals)
+- Python 3.10+ (fonctionne sur Windows PowerShell et terminaux standards)
 
-Run the interpreter
+Lancer l’interpréteur
 
-Normal mode:
+Mode normal :
 
 ```powershell
 python poetic.py examples\hello.ptc
 ```
 
-With input file:
+Avec un fichier d’entrée :
 
 ```powershell
 python poetic.py -i input.txt examples\cat.ptc
 ```
 
-Wimpmode (digits-only source):
+Wimpmode (source composée de chiffres) :
 
 ```powershell
 python poetic.py -w examples\print_A.ptc
 ```
 
-Poetic language rules implemented
+Règles du langage Poetic implémentées
 
-- Source is read as UTF-8.
-- Normal mode:
-  - non-letter chars become separators (apostrophe is removed),
-  - each word becomes its length,
-  - length 10 is encoded as `0`.
-- Wimpmode (`-w`): keep only digits.
-- Tokenization regex:
+- Le source est lu en UTF-8.
+- Mode normal :
+  - les caractères non alphabétiques deviennent des séparateurs (apostrophe supprimée),
+  - chaque mot est remplacé par sa longueur,
+  - la longueur 10 est encodée en `0`.
+- Wimpmode (`-w`) : conserve uniquement les chiffres.
+- Regex de tokenisation :
 
 ```python
 re.findall(r"((?:[3456]\d)|\d)", program)
@@ -58,38 +58,38 @@ Instructions
 - `0` END
 - `1` IF
 - `2` EIF
-- `3x` INC x (`0` arg means 10)
-- `4x` DEC x (`0` arg means 10)
-- `5x` FWD x (`0` arg means 10)
-- `6x` BAK x (`0` arg means 10)
+- `3x` INC x (`0` en argument signifie 10)
+- `4x` DEC x (`0` en argument signifie 10)
+- `5x` FWD x (`0` en argument signifie 10)
+- `6x` BAK x (`0` en argument signifie 10)
 - `7` OUT
 - `8` IN
 - `9` RND
 
-Runtime semantics
+Sémantique d’exécution
 
-- Tape size: 30000 bytes
-- Byte values wrap modulo 256
-- Pointer wraps modulo tape size
-- IF/EIF supports nesting
-- IN stops modifying memory after EOF/CTRL+Z
+- Taille de bande mémoire : 30000 octets
+- Valeurs d’octet en modulo 256
+- Pointeur mémoire circulaire (wrap)
+- IF/EIF supporte l’imbrication
+- IN cesse de modifier la mémoire après EOF/CTRL+Z
 
-Common errors from interpreter
+Erreurs courantes de l’interpréteur
 
 - `Unexpected EOF`
 - `Missing argument`
 - `Mismatched IF/EIF`
 
-Utilities
+Utilitaires
 
 - `tools/tokenize.py`
-  - Print tokens from a file using the same parsing rules as `poetic.py`
+  - Affiche les tokens d’un fichier avec les mêmes règles que `poetic.py`
 - `tools/simulate.py`
-  - Step-by-step simulation with execution trace
+  - Simulation pas à pas avec trace d’exécution
 - `tools/simulate_text.py`
-  - Simulate from `--text` directly (no temporary file needed)
+  - Simulation depuis `--text` (pas besoin de fichier temporaire)
 
-Examples:
+Exemples :
 
 ```powershell
 python tools\tokenize.py examples\hello.ptc
@@ -97,35 +97,35 @@ python tools\simulate.py -w --simulate examples\print_A.ptc
 python tools\simulate_text.py --text "bonjour le monde" --tokens
 ```
 
-Website (archived copy) and Try It Online
+Site web (copie archivée) et Try It Online
 
-The `site/` folder is a local reconstruction of the original website (pages, styles, fonts, textures).
+Le dossier `site/` est une reconstruction locale du site original (pages, styles, polices, textures).
 
-Run local web server + API:
+Lancer le serveur web local + API :
 
 ```powershell
 python app.py --port 8000
 ```
 
-Then open:
+Puis ouvrir :
 
-- Main site: http://127.0.0.1:8000/
-- Try It Online: http://127.0.0.1:8000/tio/index.html
+- Site principal : http://127.0.0.1:8000/
+- Try It Online : http://127.0.0.1:8000/tio/index.html
 
-API endpoint used by TIO
+Endpoint API utilisé par TIO
 
 - `POST /api/run`
-- JSON body:
+- Corps JSON :
 
 ```json
 {
-  "source": "...poetic source...",
-  "input": "...stdin text...",
+  "source": "...source poetic...",
+  "input": "...texte stdin...",
   "wimpmode": false
 }
 ```
 
-- JSON response (success):
+- Réponse JSON (succès) :
 
 ```json
 {
@@ -136,30 +136,30 @@ API endpoint used by TIO
 }
 ```
 
-Notes on the TIO page
+Notes sur la page TIO
 
-- `Execute` runs code through `/api/run`.
-- `Stop` aborts the browser request.
-- `Wimpmode OFF/ON` toggles digit-mode execution.
-- `Share` creates a link that stores source/input/wimpmode in URL state.
-- API status indicator shows Connected/Disconnected and supports Retry.
+- `Execute` lance le code via `/api/run`.
+- `Stop` annule la requête navigateur.
+- `Wimpmode OFF/ON` bascule le mode digits.
+- `Share` génère un lien qui stocke source/input/wimpmode dans l’URL.
+- L’indicateur API affiche Connected/Disconnected avec bouton Retry.
 
-Project layout
+Structure du projet
 
-- `poetic.py` — CLI interpreter
-- `app.py` — root launcher for website server
-- `tools/poetic_engine.py` — reusable Poetic runtime for API
-- `tools/serve_site.py` — HTTP server + `/api/run`
-- `site/` — archived website pages/assets (including `site/tio/index.html`)
-- `examples/` — `.ptc` samples
-- `tests/run_tests.py` — test runner
+- `poetic.py` — interpréteur CLI
+- `app.py` — lanceur racine du serveur website
+- `tools/poetic_engine.py` — runtime Poetic réutilisable pour l’API
+- `tools/serve_site.py` — serveur HTTP + `/api/run`
+- `site/` — pages/assets archivés (dont `site/tio/index.html`)
+- `examples/` — exemples `.ptc`
+- `tests/run_tests.py` — script de test
 
-Quick troubleshooting
+Dépannage rapide
 
-- If port 8000 is busy, use another port:
+- Si le port 8000 est déjà pris, utilise un autre port :
 
 ```powershell
 python app.py --port 8011
 ```
 
-- Then open the matching URL (`http://127.0.0.1:8011/tio/index.html`).
+- Puis ouvre l’URL correspondante (`http://127.0.0.1:8011/tio/index.html`).
