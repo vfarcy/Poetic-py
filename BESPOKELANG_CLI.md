@@ -111,7 +111,7 @@ Endpoint backend:
 }
 ```
 
-- Reponse succes:
+- Reponse succes (HTTP 200):
 
 ```json
 {
@@ -120,6 +120,61 @@ Endpoint backend:
   "steps": 123
 }
 ```
+
+- Reponse erreur runtime (HTTP 200):
+
+```json
+{
+  "ok": false,
+  "error": "..."
+}
+```
+
+- Reponses d'erreur HTTP:
+- `400` JSON invalide:
+
+```json
+{
+  "ok": false,
+  "error": "Invalid JSON payload"
+}
+```
+
+- `400` types invalides (`source` ou `input` non-string):
+
+```json
+{
+  "ok": false,
+  "error": "Fields 'source' and 'input' must be strings"
+}
+```
+
+- `404` endpoint inconnu:
+
+```json
+{
+  "ok": false,
+  "error": "Not found"
+}
+```
+
+- `500` erreur interne:
+
+```json
+{
+  "ok": false,
+  "error": "Internal server error"
+}
+```
+
+- CORS / preflight:
+  - `OPTIONS /api/run` repond `204`.
+  - En-tetes CORS exposes: `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods: POST, OPTIONS`, `Access-Control-Allow-Headers: Content-Type`.
+
+- Limites backend appliquees a l'execution:
+  - `max_steps = 500000`
+  - `max_output = 100000`
+  - `time_limit_s = 5.0`
 
 ## 6) Exemples disponibles
 
