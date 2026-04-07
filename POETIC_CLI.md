@@ -1,4 +1,4 @@
-# MANUAL - Poetic-py (source: origin/main)
+# POETIC_CLI - Poetic-py (source: origin/main)
 
 Ce document decrit le fonctionnement de ```poetic.py```.
 
@@ -400,7 +400,7 @@ Remarque sur `0`:
 Executer le programme `hello.ptc`:
 
 ```powershell
-python poetic.py hello.ptc
+python poetic.py examples\hello.ptc
 ```
 
 Mode wimpmode (le fichier contient directement des chiffres):
