@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POETIC — FAQ</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <header>
+    <h1>POETIC</h1>
+    <h2>Poetry in Execution</h2>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html">Poetic</a></li>
+      <li><a href="../tutorial/index.html">Tutorial</a></li>
+      <li><a href="../examples/index.html">Examples</a></li>
+      <li><a href="../tio/index.html">Try It Online</a></li>
+      <li><a href="../download/index.html">Download</a></li>
+      <li class="active"><a href="index.html">FAQ</a></li>
+      <li><a href="../contact/index.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <hr>
+
+  <main>
+
+    <div id="toc-container">
+      <h3>On this page:</h3>
+      <ul>
+        <li><a href="#is-this-a-joke">Is this some kind of joke?</a></li>
+        <li><a href="#why-does-this-exist">Why does this exist?</a></li>
+        <li><a href="#write-and-run">How do I write and run these poems/programs?</a></li>
+        <li><a href="#who-made-this">Who's the weirdo that made this?</a></li>
+        <li><a href="#strange-poems">Why do the poems seem so strange?</a></li>
+        <li><a href="#too-hard">Poetic programs are too hard to write!</a></li>
+        <li><a href="#practical-uses">Are there any practical uses for Poetic?</a></li>
+      </ul>
+    </div>
+
+    <h2 id="is-this-a-joke">Is this some kind of joke?</h2>
+
+    <p>
+      That is an odd question to open with, but no. The interpreter works, the example
+      programs work, and it is indeed possible to write your own programs. Whether or
+      not you would want to is an entirely different story.
+    </p>
+
+    <h2 id="why-does-this-exist">Why does this exist?</h2>
+
+    <p>
+      This programming language is partly inspired by
+      <a href="https://esolangs.org/wiki/Brainf***">brainf***</a> by Urban Müller,
+      which is an esoteric programming language (or esolang) that, despite having only
+      8 instructions, is Turing-complete (able to compute anything that is computable,
+      given enough time and memory). The idea behind Poetic is a hybrid of brainf***
+      and <a href="http://cadaeic.net/pilish.htm">Pilish</a>, which describes a way of
+      writing in which the lengths of words follow the digits of the number pi.
+    </p>
+
+    <h2 id="write-and-run">How do I write and run these poems/programs?</h2>
+
+    <p>
+      I have created a Python interpreter for Poetic. You can download it on
+      <a href="../download/index.html">the Download page</a>, and you can run it on
+      your favorite terminal using something similar to this:
+    </p>
+
+    <div class="cmd">poetic.py [ -i input-file ] [ -w ] poetic-program</div>
+
+    <p>
+      <span class="inline-code">poetic-program</span> is the program file which you want to run as Poetic
+      code. (It can have any extension, though <span class="inline-code">.ptc</span> is recommended.)
+    </p>
+
+    <p>The options are optional, but if included, they do the following:</p>
+
+    <ul>
+      <li><strong>-i / --input</strong> — Take input from a specified file, instead of STDIN.</li>
+      <li><strong>-w / --wimpmode</strong> — Interpret program in wimpmode (programs are a series of numbers, instead of words).</li>
+    </ul>
+
+    <p>
+      As for writing them, consult the <a href="../tutorial/index.html">tutorial</a>
+      for guidance on how to intentionally write working programs. (Or, perhaps you
+      can try "running" a piece of regular poetry, and seeing what happens!)
+    </p>
+
+    <h2 id="who-made-this">Who's the weirdo that made this?</h2>
+
+    <p>Okay, first off: that's rude.</p>
+
+    <p>
+      This was made by Josiah Winslow, who, for the second time, decided that the
+      easiest way to create website content for a web development class assignment
+      would be to make a complete programming language. The professor who assigned
+      this project was Jonathan Meersman, so he is partly to blame here as well.
+    </p>
+
+    <h2 id="strange-poems">Why do the poems seem so strange?</h2>
+
+    <p>
+      Such is the nature of fitting words in a natural language to certain lengths.
+      Also, part of the objective of Poetic is to have its programs look like abstract
+      poetry, which is extremely difficult to analyse.
+    </p>
+
+    <h2 id="too-hard">Poetic programs are too hard to write!</h2>
+
+    <p>
+      I understand! It's not always easy to write compelling literature and have it
+      execute as code. This is why I added an option to the Python interpreter that
+      makes it easier to write functioning programs. If you run the interpreter like
+      this on your favorite terminal:
+    </p>
+
+    <div class="cmd">poetic.py -w poetic-program</div>
+
+    <p>
+      …then the <span class="inline-code">poetic-program</span> file will be interpreted as the literal
+      digits in the file, instead of converting from the lengths of its words.
+    </p>
+
+    <h2 id="practical-uses">Are there any practical uses for Poetic?</h2>
+
+    <p>I sure hope not.</p>
+
+  </main>
+
+  <hr>
+
+  <footer id="contact-info">
+    1-414-488-5732
+    <a href="mailto:winslowjosiah@gmail.com">winslowjosiah@gmail.com</a>
+    <a href="https://twitter.com/WinslowJosiah">@WinslowJosiah</a><br>
+    &copy; Copyright Josiah Winslow 2018.
+  </footer>
+</body>
+</html>

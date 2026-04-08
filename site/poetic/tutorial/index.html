@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POETIC — Tutorial</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <header>
+    <h1>POETIC</h1>
+    <h2>Poetry in Execution</h2>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html">Poetic</a></li>
+      <li class="active"><a href="index.html">Tutorial</a></li>
+      <li><a href="../examples/index.html">Examples</a></li>
+      <li><a href="../tio/index.html">Try It Online</a></li>
+      <li><a href="../download/index.html">Download</a></li>
+      <li><a href="../faq/index.html">FAQ</a></li>
+      <li><a href="../contact/index.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <hr>
+
+  <main class="clearfix">
+
+    <div id="toc-container">
+      <h3>On this page:</h3>
+      <ul>
+        <li><a href="#source-code">Source Code</a></li>
+        <li><a href="#instruction-set">Instruction Set</a></li>
+        <li><a href="#clarifications">Clarifications</a></li>
+      </ul>
+    </div>
+
+    <p>
+      Poetic is an esoteric programming language (or esolang) based on one of the most
+      classic esolangs, <a href="https://esolangs.org/wiki/Brainf***">brainf***</a>.
+      The main form of data storage in Poetic is the unsigned byte, which can be
+      used to store a number in the range 0–255, an ASCII character, or whatever else you
+      can conceive of using it for. Poetic has a "tape" of 30,000 of these values,
+      and a memory pointer to keep track of which one of those values is currently being
+      accessed.
+    </p>
+
+    <p>
+      The beauty of Poetic, and what sets it apart from most other programming
+      languages, is that there are multiple ways to write a program. Poetic programs can be
+      written in natural language, as a way to either self-describe them, obfuscate
+      them, or to simply have fun with their design. The goal of the Poetic programming
+      language is that someone could walk into a slam poetry session, recite a Poetic
+      program, and have nobody know the difference.
+    </p>
+
+    <h2 id="source-code">Source Code</h2>
+
+    <p>
+      Source code for Poetic is entered in the form of words, in any natural language.
+      There are exactly 10 instructions in Poetic, each represented by a numeric
+      digit, and each word is converted to instructions as follows:
+    </p>
+
+    <ul>
+      <li>Words are considered to consist of any number of alphabetic characters (with or without accents) and apostrophes.</li>
+      <li>Any character that is not an alphabetic character or apostrophe is ignored, and treated as whitespace.</li>
+      <li>Each word of <em>n</em> letters represents:
+        <ul>
+          <li>The digit <em>n</em> if <em>n</em> &lt; 10</li>
+          <li>The digit 0 if <em>n</em> = 10</li>
+          <li>Two consecutive digits if <em>n</em> &gt; 10 (for example, 12-letter words represent the digits 1, 2)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>
+      While it is possible to program using words that aren't "real", but are
+      considered words by this system, this is not recommended. It misses the whole point
+      of the language in the first place. (If you are able to use this device to great
+      poetic effect, however, feel free!)
+    </p>
+
+    <p>Here are some special cases that arise as a consequence of these rules:</p>
+
+    <table>
+      <thead>
+        <tr><th>Word</th><th>Instructions</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="inline-code">easy</span></td><td>4</td></tr>
+        <tr><td><span class="inline-code">shouldn't</span></td><td>8</td></tr>
+        <tr><td><span class="inline-code">vocabulary</span></td><td>0</td></tr>
+        <tr><td><span class="inline-code">unintelligible</span></td><td>1, 4</td></tr>
+        <tr><td><span class="inline-code">word-for-word</span></td><td>4, 3, 4</td></tr>
+        <tr><td><span class="inline-code">4th place</span></td><td>2, 5</td></tr>
+        <tr><td><span class="inline-code">good4you</span></td><td>4, 3</td></tr>
+        <tr><td><span class="inline-code">fun &amp; games</span></td><td>3, 5</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="instruction-set">Instruction Set</h2>
+
+    <p>
+      Poetic has 10 instructions, each represented by a numeric digit. They are as follows:
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Value</th><th>Opcode</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td><td><strong>IF</strong></td>
+          <td>If the current byte is equal to 0, jump execution to after the matching EIF.</td>
+        </tr>
+        <tr>
+          <td>2</td><td><strong>EIF</strong></td>
+          <td>If the current byte is not equal to 0, jump execution to before the matching IF.</td>
+        </tr>
+        <tr>
+          <td>3</td><td><strong>INC</strong></td>
+          <td>Increment the value of the current byte by <em>next_digit</em>. If <em>next_digit</em> is 0, the value used instead is 10.</td>
+        </tr>
+        <tr>
+          <td>4</td><td><strong>DEC</strong></td>
+          <td>Decrement the value of the current byte by <em>next_digit</em>. If <em>next_digit</em> is 0, the value used instead is 10.</td>
+        </tr>
+        <tr>
+          <td>5</td><td><strong>FWD</strong></td>
+          <td>Increment the memory pointer by <em>next_digit</em>. If <em>next_digit</em> is 0, the value used instead is 10.</td>
+        </tr>
+        <tr>
+          <td>6</td><td><strong>BAK</strong></td>
+          <td>Decrement the memory pointer by <em>next_digit</em>. If <em>next_digit</em> is 0, the value used instead is 10.</td>
+        </tr>
+        <tr>
+          <td>7</td><td><strong>OUT</strong></td>
+          <td>Output the value of the current byte as an ASCII character.</td>
+        </tr>
+        <tr>
+          <td>8</td><td><strong>IN</strong></td>
+          <td>Read a character from the input stream, and write its ASCII value to the current byte.</td>
+        </tr>
+        <tr>
+          <td>9</td><td><strong>RND</strong></td>
+          <td>Set the current byte to a random value from 0 to 255.</td>
+        </tr>
+        <tr>
+          <td>0</td><td><strong>END</strong></td>
+          <td>End program execution here. This does not end program execution if it is used as an argument for INC, DEC, FWD, or BAK.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Note that the words for the opcodes are not the instructions themselves, but
+      they are handy ways to refer to the instructions in Poetic pseudocode. Writing
+      <span class="inline-code">BAK 4</span> in your source code will not result in a BAK 4 being executed;
+      writing <em>Poetic code</em> (for example) would have this effect.
+    </p>
+
+    <h2 id="clarifications">Clarifications</h2>
+
+    <p>
+      These definitions still leave a bit of room for interpretation for many
+      situations that could arise. Here is my attempt at clarifying the correct behavior
+      in these situations.
+    </p>
+
+    <ul>
+      <li>
+        The Poetic interpreter is smart. It can tell the difference between digits being
+        used as instructions, and digits being used as data. For example,
+        <em>a fool I am</em> would be interpreted as IF DEC 1 EIF, and it would
+        decrement the current byte by 1 until it is 0.
+      </li>
+      <li>
+        IF/EIF pairs can be nested. This means that, if the current byte is 0 and a
+        statement like <span class="inline-code">IF...IF...EIF...EIF</span> is executed, the program would
+        jump to the second EIF, not the first.
+      </li>
+      <li>
+        Each of the bytes on the "tape" wrap: 255 + 1 = 0, and 0 &minus; 1 = 255. If one
+        wishes to express numbers that are outside of the unsigned byte range, one needs
+        to program very creatively.
+      </li>
+      <li>
+        Not only do the values of bytes wrap, but the memory pointer also wraps.
+        Incrementing the memory pointer at the end of the tape wraps around to the
+        beginning, and decrementing the memory pointer at the beginning of the tape
+        wraps around to the end.
+      </li>
+      <li>
+        Once the end of input is reached, the IN command ceases to update the current
+        byte. (This applies to both file input and STDIN input, even though STDIN
+        doesn't technically have an "end".)
+      </li>
+    </ul>
+
+  </main>
+
+  <hr>
+
+  <footer id="contact-info">
+    1-414-488-5732
+    <a href="mailto:winslowjosiah@gmail.com">winslowjosiah@gmail.com</a>
+    <a href="https://twitter.com/WinslowJosiah">@WinslowJosiah</a><br>
+    &copy; Copyright Josiah Winslow 2018.
+  </footer>
+
+</body>
+</html>
