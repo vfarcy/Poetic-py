@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BESPOKE — FAQ</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <header>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html">Bespoke</a></li>
+      <li><a href="../tutorial/index.html">Tutorial</a></li>
+      <li><a href="../examples/index.html">Examples</a></li>
+      <li><a href="../tio/index.html">Try It Online</a></li>
+      <li><a href="../download/index.html">Download</a></li>
+      <li class="active"><a href="index.html">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <hr>
+
+  <main>
+
+    <div id="toc-container">
+      <h3>On this page:</h3>
+      <ul>
+        <li><a href="#is-this-a-joke">Is this some kind of joke?</a></li>
+        <li><a href="#why-does-this-exist">Why does this exist?</a></li>
+        <li><a href="#how-to-write">How do I write and run Bespoke programs?</a></li>
+        <li><a href="#who-made-this">Who made this?</a></li>
+        <li><a href="#strange-prose">Why does the prose seem so strange?</a></li>
+        <li><a href="#practical">Are there practical uses for Bespoke?</a></li>
+      </ul>
+    </div>
+
+    <h2 id="is-this-a-joke">Is this some kind of joke?</h2>
+
+    <p>
+      No. The interpreter works, the example programs run correctly, and it is
+      genuinely possible to write new programs. Whether you <em>want</em> to is
+      a separate question.
+    </p>
+
+    <h2 id="why-does-this-exist">Why does this exist?</h2>
+
+    <p>
+      Bespoke is an evolution of <a href="https://esolangs.org/wiki/Poetic">Poetic</a>,
+      another esoteric language by Josiah Winslow. Where Poetic encodes
+      <a href="https://esolangs.org/wiki/Brainf***">Brainfuck</a> instructions via
+      word length, Bespoke uses the same encoding principle but defines its own,
+      richer instruction set — complete with a stack, a heap, arbitrary-precision
+      integers, and structured control flow.
+    </p>
+
+    <p>
+      The name reflects this: a Bespoke program is tailor-made, fitted exactly to
+      the prose that carries it.
+    </p>
+
+    <h2 id="how-to-write">How do I write and run Bespoke programs?</h2>
+
+    <p>
+      Install the interpreter (see the <a href="../download/index.html">Download</a> page)
+      and run:
+    </p>
+
+    <div class="cmd">bespoke.py [ -i input-file ] program.bspk</div>
+
+    <p>
+      For writing programs, consult the <a href="../tutorial/index.html">Tutorial</a>.
+      You can also experiment in your browser on the
+      <a href="../tio/index.html">Try It Online</a> page.
+    </p>
+
+    <h2 id="who-made-this">Who made this?</h2>
+
+    <p>
+      Bespoke was designed and implemented by
+      <a href="https://github.com/WinslowJosiah">Josiah Winslow</a>.
+      This site is an adaptation of the original Poetic site, rebranded for Bespoke.
+    </p>
+
+    <h2 id="strange-prose">Why does the prose seem so strange?</h2>
+
+    <p>
+      Fitting natural-language words to specific length sequences is genuinely
+      difficult. The goal is for programs to read as plausible prose — or at least
+      interesting abstract poetry — while each word secretly encodes a digit in the
+      instruction stream.
+    </p>
+
+    <h2 id="practical">Are there practical uses for Bespoke?</h2>
+
+    <p>
+      Bespoke is Turing-complete and can in theory compute anything computable.
+      In practice it is an esoteric language primarily meant for exploration, art,
+      and the peculiar challenge of writing executable literature.
+    </p>
+
+  </main>
+
+  <hr>
+
+</body>
+</html>

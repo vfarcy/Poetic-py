@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BESPOKE — Prose in Execution</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Bespoke</h1>
+    <h2>Prose in Execution</h2>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html">Home</a></li>
+      <li class="active"><a href="index.html">Bespoke</a></li>
+      <li><a href="tutorial/index.html">Tutorial</a></li>
+      <li><a href="examples/index.html">Examples</a></li>
+      <li><a href="tio/index.html">Try It Online</a></li>
+      <li><a href="download/index.html">Download</a></li>
+      <li><a href="faq/index.html">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <hr>
+
+  <main>
+
+    <p>
+      Language is almost as old as thought itself. Prose allows the writer to communicate
+      with a precision and flourish that poetry sometimes sacrifices for form, yet the best
+      prose still carries a rhythm — a life of its own that transcends mere information.
+    </p>
+
+    <p>
+      Computer programs are, at their core, precise instructions for a machine. They are
+      functional, exact, and largely indifferent to aesthetics. Yet a well-crafted program
+      can possess an elegance that its author recognises as something approaching beauty —
+      a kind of invisible poetry hiding in the logic.
+    </p>
+
+    <p>
+      What if prose and program were one and the same? What if the same sentence
+      a reader appreciates for its cadence also directed a machine to compute, to loop,
+      to decide? That is the question Bespoke answers. Like a suit cut to a precise
+      measure, every word in a Bespoke program is chosen not only to read naturally
+      but to run correctly.
+    </p>
+
+    <h2>What do Bespoke programs look like?</h2>
+
+    <p>This is a program that prints "Hello, World!"</p>
+
+<pre>more peppermint tea?
+ah yes, it's not bad
+I appreciate peppermint tea
+it's a
+refreshing beverage
+
+but you immediately must try the gingerbread
+I had it
+sometime, forever ago
+oh, and it was so good!
+made the way a gingerbread must clearly be
+baked
+
+in fact, I've got a suggestion
+I may go outside
+to Marshal Mellow's
+Bakery
+so we both receive one</pre>
+
+    <p>This short prose reads as a pleasant conversation — and simultaneously outputs <em>Hello, World!</em>
+    to the screen.</p>
+
+    <h2>How is that possible?</h2>
+
+    <p>
+      Bespoke encodes instructions in the <em>lengths</em> of words, not their content.
+      Each word's letter count becomes a digit. Those digits, in sequence, form the
+      program's instruction stream. The actual words can be anything — a letter to a
+      friend, a recipe, a confession — as long as the lengths are right.
+    </p>
+
+    <h2>How do I write and run these programs?</h2>
+
+    <p>
+      A Python interpreter is available on <a href="download/index.html">the Download page</a>.
+      Run it from the terminal like this:
+    </p>
+
+    <div class="cmd">bespoke.py [ -i input-file ] program.bspk</div>
+
+    <p>
+      <span class="inline-code">program.bspk</span> is the file you want to run.
+      (Any extension works, though <span class="inline-code">.bspk</span> is recommended.)
+    </p>
+
+    <ul>
+      <li><strong>-i / --input</strong> — Take input from a specified file, instead of STDIN.</li>
+    </ul>
+
+    <p>
+      Visit the <a href="tutorial/index.html">Tutorial</a> for a complete guide to the
+      instruction set, or head to <a href="tio/index.html">Try It Online</a> to run
+      your first Bespoke program right in the browser.
+    </p>
+
+    <h2>Who made this?</h2>
+
+    <p>
+      Bespoke was designed by Josiah Winslow, building on his earlier language
+      <a href="https://esolangs.org/wiki/Poetic_(esolang)">Poetic</a>.
+      The goal was to keep the same natural-language encoding while replacing the
+      underlying Brainfuck model with something far more expressive: a stack machine
+      with arbitrary-precision integers, a heap, loops, conditionals, and functions.
+    </p>
+
+    <p>
+      This site is a web implementation of
+      <a href="https://github.com/WinslowJosiah/bespokelang">Josiah Winslow's original project</a>,
+      adapted to run Bespoke programs <a href="tio/index.html">directly in the browser</a>.
+    </p>
+
+  </main>
+
+  <hr>
+
+

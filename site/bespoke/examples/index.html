@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BESPOKE — Examples</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <header>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html">Bespoke</a></li>
+      <li><a href="../tutorial/index.html">Tutorial</a></li>
+      <li class="active"><a href="index.html">Examples</a></li>
+      <li><a href="../tio/index.html">Try It Online</a></li>
+      <li><a href="../download/index.html">Download</a></li>
+      <li><a href="../faq/index.html">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <hr>
+
+  <main>
+
+    <div id="toc-container">
+      <h3>On this page:</h3>
+      <ul>
+        <li><a href="#hello">Hello, World!</a></li>
+        <li><a href="#fibonacci">Fibonacci</a></li>
+        <li><a href="#truth">Truth Machine</a></li>
+        <li><a href="#asciiloop">ASCII Loop</a></li>
+      </ul>
+    </div>
+
+    <p>
+      This page contains example programs written in Bespoke, along with explanations
+      of how they work. Each program aims to read as natural prose while doing
+      something interesting computationally.
+    </p>
+
+    <h2 id="hello">Hello, World!</h2>
+
+<pre>more peppermint tea?
+ah yes, it's not bad
+I appreciate peppermint tea
+it's a
+refreshing beverage
+
+but you immediately must try the gingerbread
+I had it
+sometime, forever ago
+oh, and it was so good!
+made the way a gingerbread must clearly be
+baked
+
+in fact, I've got a suggestion
+I may go outside
+to Marshal Mellow's
+Bakery
+so we both receive one</pre>
+
+    <p>
+      This warm tea-shop conversation is actually a complete "Hello, World!" program.
+      Each word contributes its letter-count to the instruction stream; the actual
+      meaning of the words is irrelevant to the machine, yet every detail has been
+      chosen so that the prose sounds natural.
+    </p>
+    <p>
+      The program pushes the codepoints of each letter in "Hello, World!" onto the
+      stack and outputs them one by one using <span class="inline-code">OUTPUT CH</span>.
+    </p>
+
+    <h2 id="fibonacci">Fibonacci</h2>
+
+<pre>read a note I wrote you
+it says "someone shall love you,
+as big as past lovers
+did,
+put in a collection"
+surely it will be
+in truth, somebody here is probably
+isolated
+existing in pain without you</pre>
+
+    <p>
+      This short poem takes a number <em>N</em> as input and outputs the first <em>N</em>
+      Fibonacci numbers, one per line. The stack holds the two most recent values while a
+      counter decrements toward zero. The <span class="inline-code">CONTROL WHILE</span>
+      loop continues as long as the counter is positive.
+    </p>
+
+    <h2 id="truth">Truth Machine</h2>
+
+<pre>there I stumble
+falling up
+even whilst I go down
+falling out</pre>
+
+    <p>
+      The classic truth machine: reads a single character from input. If it is
+      <span class="inline-code">'0'</span>, output <span class="inline-code">0</span> once and halt.
+      If it is <span class="inline-code">'1'</span>, output <span class="inline-code">1</span> forever.
+      Four words, four instructions — and a vague sense of existential vertigo.
+    </p>
+
+    <h2 id="asciiloop">ASCII Loop</h2>
+
+<pre>love
+mysterious, strange, cryptic as ever
+defies an explicit meaning
+has you in
+place, frozen
+spinning around, and left delirious
+spouting complete gibberish
+without end</pre>
+
+    <p>
+      Loops forever, printing every printable ASCII character in sequence, starting
+      from the space character (32) and cycling back. The poem mirrors this endless
+      repetition — something spinning, something without end.
+    </p>
+
+  </main>
+
+  <hr>
+
+</body>
+</html>

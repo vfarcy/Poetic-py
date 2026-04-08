@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BESPOKE — Download</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <header>
+    <h1>BESPOKE</h1>
+    <h2>Prose in Execution</h2>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html">Bespoke</a></li>
+      <li><a href="../tutorial/index.html">Tutorial</a></li>
+      <li><a href="../examples/index.html">Examples</a></li>
+      <li><a href="../tio/index.html">Try It Online</a></li>
+      <li class="active"><a href="index.html">Download</a></li>
+      <li><a href="../faq/index.html">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <hr>
+
+  <main>
+
+    <h2>Download</h2>
+
+    <p>
+      Bespoke is hosted on
+      <a href="https://github.com/vfarcy/Poetic-py">GitHub</a>.
+      Clone the repository and run the
+      <span class="inline-code">bespoke.py</span> script directly:
+    </p>
+
+    <div class="cmd">git clone https://github.com/vfarcy/Poetic-py.git</div>
+
+    <h2>How To Use</h2>
+
+    <p>The interpreter is invoked from the command line like this:</p>
+
+    <div class="cmd">bespoke.py [ -i input-file ] bespoke-program</div>
+
+    <p>
+      <span class="inline-code">bespoke-program</span> is the file you want to run.
+      The recommended extension is <span class="inline-code">.bspk</span>.
+    </p>
+
+    <ul>
+      <li><strong>-i / --input</strong> - Read input from a file instead of STDIN.</li>
+    </ul>
+
+    <h2>Examples</h2>
+
+    <p>Run a program file:</p>
+    <div class="cmd">python bespoke.py examples\helloworld.bspk</div>
+
+    <p>Use an input file:</p>
+    <div class="cmd">python bespoke.py -i input.txt examples\fibonacci.bspk</div>
+
+    <p>Pipe input directly from PowerShell:</p>
+    <div class="cmd">'12 23' | python bespoke.py examples\sum_two_numbers.bspk</div>
+
+    <p>Pipe multiline input from PowerShell:</p>
+    <div class="cmd">"12`n23" | python bespoke.py examples\sum_two_numbers.bspk</div>
+
+    <p>
+      (<kbd>CTRL+Z</kbd> on Windows or <kbd>CTRL+D</kbd> on Unix signals end-of-file.)
+    </p>
+
+    <p>
+      No installation needed? Use the
+      <a href="../tio/index.html">Try It Online</a> page instead.
+    </p>
+
+  </main>
+
+  <hr>
+
+</body>
+</html>
