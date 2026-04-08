@@ -1,104 +1,83 @@
-Bespoke (esolang) - Python interpreter + website
+Poetic + Bespoke - Python interpreters and website
 
 [![Site GitHub Pages](https://img.shields.io/badge/site-GitHub%20Pages-1f6feb)](https://vfarcy.github.io/Poetic-py/)
 
-This repository now targets Bespoke as the primary language/runtime.
+This repository contains two esolangs:
 
-Migration docs:
-- Changelog: CHANGELOG_BESPOKE.md
+- Poetic (Brainfuck-style tape model)
+- Bespoke (stack/heap model with structured control flow)
 
-Overview
+## Overview
 
-This repository contains:
-- A Bespoke CLI interpreter: bespoke.py
-- A reusable Bespoke runtime: tools/bespoke_engine.py
-- Bespoke sample programs: examples/*.bspk
-- A local copy of the Bespoke site: site/
-- A local HTTP server + API for the website and backend execution: app.py + tools/serve_site.py
+Main entry points:
 
-Prerequisites
+- `poetic.py` - Poetic CLI interpreter
+- `bespoke.py` - Bespoke CLI interpreter
+- `tests/run_poetic_tests.py` - Poetic smoke tests
+- `tests/run_bespoke_tests.py` - Bespoke smoke tests
 
-- Python 3.10+ (tested in Windows PowerShell)
+Language runtimes:
 
-Run the Bespoke interpreter
+- `tools/poetic/poetic_engine.py`
+- `tools/bespoke/bespoke_engine.py`
+
+Example programs:
+
+- `examples/poetic/*.ptc`
+- `examples/bespokelang/*.bspk`
+
+Website files:
+
+- `site/`
+
+## Prerequisites
+
+- Python 3.10+
+
+## Run Poetic
 
 Basic usage:
 
 ```powershell
-python bespoke.py examples\helloworld.bspk
+python poetic.py examples\poetic\hello.ptc
+```
+
+Wimpmode:
+
+```powershell
+python poetic.py -w examples\poetic\bonjour.ptc
+```
+
+## Run Bespoke
+
+Basic usage:
+
+```powershell
+python bespoke.py examples\bespokelang\helloworld.bspk
 ```
 
 With input file:
 
 ```powershell
-python bespoke.py -i input.txt examples\fibonacci.bspk
+python bespoke.py -i input.txt examples\bespokelang\sum_two_numbers.bspk
 ```
 
-Language notes (Bespoke)
-
-- Source is read as UTF-8.
-- Words are converted to digit streams by letter count.
-- 10-letter words encode digit 0.
-- Runtime uses stack + heap and arbitrary-precision integers.
-- Structured control flow includes IF, WHILE, DOWHILE, and FUNCTION operations.
-
-Run local website + API
-
-Start local server:
+## Run Tests
 
 ```powershell
-python app.py --port 8000
+python tests\run_poetic_tests.py
+python tests\run_bespoke_tests.py
 ```
 
-Then open:
-- Site: http://127.0.0.1:8000/
-- Try It Online: http://127.0.0.1:8000/tio/index.html
+## Documentation
 
-Backend API (optional)
+- `POETIC_LANGAGE.MD`
+- `POETIC_CLI.md`
+- `BESPOKE_LANGAGE.MD`
+- `BESPOKELANG_CLI.md`
+- `CHANGELOG_BESPOKE.md`
 
-Endpoint:
-- POST /api/run
+## Notes
 
-Request JSON:
-
-```json
-{
-  "source": "...bespoke source...",
-  "input": "...stdin text..."
-}
-```
-
-Success JSON:
-
-```json
-{
-  "ok": true,
-  "output": "...",
-  "steps": 123
-}
-```
-
-Error JSON (runtime):
-
-```json
-{
-  "ok": false,
-  "error": "..."
-}
-```
-
-Project structure
-
-- bespoke.py - Bespoke CLI
-- app.py - server entry point
-- tools/bespoke_engine.py - reusable Bespoke runtime
-- tools/serve_site.py - HTTP server + /api/run
-- site/ - website pages/assets
-- examples/ - Bespoke examples (.bspk)
-- tests/run_tests.py - test script
-
-GitHub Pages
-
-- Workflow: .github/workflows/deploy-pages.yml
-- Site URL: https://vfarcy.github.io/Poetic-py/
-- TIO URL: https://vfarcy.github.io/Poetic-py/tio/index.html
+- The `site/` folder is the website source used for GitHub Pages.
+- Historical migration notes remain in `CHANGELOG_BESPOKE.md`.

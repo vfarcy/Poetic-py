@@ -8,7 +8,7 @@ SCRIPT = os.path.join(ROOT, "bespoke.py")
 
 
 def run_case(program_name, input_text, expected):
-    program = os.path.join(ROOT, "examples", program_name)
+    program = os.path.join(ROOT, "examples", "bespokelang", program_name)
     proc = subprocess.run(
         [PY, SCRIPT, program],
         input=input_text,

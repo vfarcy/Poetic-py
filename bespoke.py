@@ -9,9 +9,12 @@ import argparse
 import sys
 
 try:
-    from tools.bespoke_engine import BespokeRuntimeError, run_bespoke
+    from tools.bespoke.bespoke_engine import BespokeRuntimeError, run_bespoke
 except ImportError:
-    from bespoke_engine import BespokeRuntimeError, run_bespoke
+    try:
+        from tools.bespoke_engine import BespokeRuntimeError, run_bespoke
+    except ImportError:
+        from bespoke_engine import BespokeRuntimeError, run_bespoke
 
 
 def error(msg: str):
